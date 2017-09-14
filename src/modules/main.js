@@ -1,15 +1,20 @@
-(function () {
+import * as THREE from 'three';
+import Avatar from './Avatar';
+
+export function main () {
     var WIDTH = window.innerWidth;
     var HEIGHT = window.innerHeight;
     var aspectRatio = WIDTH / HEIGHT;
     var fieldOfView = 60;
-    var nearPlane = 1;
+    var nearPlane = 0.1;
     var farPlane = 2000;
 
     var mousePos = {
         x: 0,
         y: 0
     };
+
+    var avatar = new Avatar();
 
     var container,
         scene,
@@ -30,26 +35,36 @@
         camera.position.z = 400;
         scene.add(camera);
 
-        geometry = new THREE.CubeGeometry(150, 150, 150);
-        material = new THREE.MeshNormalMaterial();
-
-        mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
+        scene.add(avatar.mesh);
 
         renderer = new THREE.WebGLRenderer({
-            alpha: true
+            alpha: true,
+            antialias: true 
         });
         renderer.setSize(WIDTH, HEIGHT);
+        renderer.shadowMap.enabled = true;
+
+        var hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .9)
+ 
+        var shadowLight = new THREE.DirectionalLight(0xffffff, .6);
+ 
+        shadowLight.position.set(150, 350, 350);
+        shadowLight.castShadow = true;
+
+        scene.add(hemisphereLight);
+        scene.add(shadowLight);
 
         container.appendChild(renderer.domElement);
-        
         document.addEventListener('mousemove', handleMouseMove, false);
     }
 
     function animate() {
         requestAnimationFrame(animate);
-        var vect = new THREE.Vector3(mousePos.x, mousePos.y, 0.5);
-        mesh.lookAt(vect);
+        avatar.lookAt({
+            x: mousePos.x,
+            y: mousePos.y,
+            z: 0.5
+        });
         render();
     }
 
@@ -64,4 +79,4 @@
         };
     }
 
-})();
+};
