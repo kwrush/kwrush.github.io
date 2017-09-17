@@ -1,27 +1,86 @@
 import * as THREE from 'three';
+import { TweenMax } from 'gsap';
 import { colors } from '../constants';
 
 export default class Avatar {
+
     constructor () {
         this.mesh = new THREE.Object3D();
         this.mesh.name = 'avatar';
+        this.mesh.castShadow = true;
         //this.mesh.position.set(0, 60, 0);
-        this._createFace();
+
+        this._isBlinking = false;
+        this._isConfusing = false;
+        this._isWearingGlasses = false;
+        this._lookAroundInterval = null;
+        this.isLookingAround = true;
+
+        this._createHead();
         this._createEyes();
         this._createIris();
         this._createNose();
         this._createMouth();
+        this._createEars();
     }
 
-    _createFace = () => {
-        const faceGeom = new THREE.BoxGeometry(60, 55, 50);
-        const faceMat = new THREE.MeshPhongMaterial({
+    behave = () => {
+        if (!this._isBlinking && Math.random() > 0.95) {
+            //this.confuse();
+        } else if (!this._isConfusing && Math.random() > 0.95) {
+            this.blink();
+        }
+    }
+
+    blink = () => {
+        if (!this._isBlinking) {
+            this._isBlinking = true;
+            TweenMax.to(this.eyes.scale, 0.07, {y: 0, yoyo: true, repeat: 1, delay: 3});
+            TweenMax.to(this.iris.scale, 0.07, {y: 0.01, yoyo: true, repeat: 1, delay: 3, onComplete: () => {
+                this._isBlinking = false;
+            }});
+        }
+    }
+
+    confuse = () => {
+        if (!this._isConfusing) {
+            this._isConfusing = true;
+            TweenMax.to(this.eyes.scale, 0.1, {y: 0.2, repeat: 1});
+            TweenMax.to(this.iris.scale, 0.1, {y: 0.3, repeat: 1});
+            TweenMax.to(this.mouth.scale, 0.1, {x: 1.5, y: 0.5, repeat: 1, onComplete: () => {
+                TweenMax.to(this.eyes.scale, 0.1, {y: 1, repeat: 1, delay: 2});
+                TweenMax.to(this.iris.scale, 0.1, {y: 1, repeat: 1, delay: 2});
+                TweenMax.to(this.mouth.scale, 0.1, {x: 1, y: 1, repeat: 1, delay: 2, onComplete: () => {
+                    this._isConfusing = false;
+                }});
+            }});
+        }
+    }
+
+    lookAt = (target) => {
+        const vector = this._constrainHeadRotation(target);
+
+        if (!this.oldTargetLookPos) this.oldTargetLookPos = new THREE.Vector3();
+        this.newTargetLookPos = vector.clone();
+
+        // Gradually rotate head to the final target
+        this.lookPos = this.oldTargetLookPos.clone()
+            .add(this.newTargetLookPos.sub(this.oldTargetLookPos).multiplyScalar(0.15));
+        this.mesh.lookAt(this.lookPos);
+
+        this.oldTargetLookPos = this.lookPos;
+    }
+
+    _createHead = () => {
+        const headGeom = new THREE.BoxGeometry(60, 56, 50);
+        const headMat = new THREE.MeshPhongMaterial({
             color: colors.skin,
             flatShading: THREE.FlatShading
         });
-        const face = new THREE.Mesh(faceGeom, faceMat);
-        face.receiveShadow = true;
-        this.mesh.add(face);
+        const head = new THREE.Mesh(headGeom, headMat);
+        //head.castShadow = true;
+        head.receiveShadow = true;
+        this.mesh.add(head);
     }
 
     _createEyes = () => {
@@ -32,13 +91,17 @@ export default class Avatar {
         });
 
         const leftEye = new THREE.Mesh(eyeGeom, eyeMat);
-        leftEye.position.set(20, 12, 27);
+        leftEye.position.set(20, 0, 0);
 
         const rightEye = leftEye.clone();
-        rightEye.position.set(-20, 12, 27);
+        rightEye.position.set(-20, 0, 0);
+
+        this.eyes = new THREE.Object3D();
+        this.eyes.position.set(0, 12, 27);
+        this.eyes.add(leftEye);
+        this.eyes.add(rightEye);
         
-        this.mesh.add(leftEye);
-        this.mesh.add(rightEye);
+        this.mesh.add(this.eyes);
     }
 
     _createIris = () => {
@@ -49,26 +112,41 @@ export default class Avatar {
         });
 
         const leftIris = new THREE.Mesh(irisGeom, irisMat);
-        leftIris.position.set(17, 13, 28);
+        leftIris.position.set(17, 0, 0);
 
         const rightIris = leftIris.clone();
-        rightIris.position.set(-17, 13, 28);
+        rightIris.position.set(-17, 0, 0);
+
+        this.iris = new THREE.Object3D();
+        this.iris.position.set(0, 12, 28);
+        this.iris.add(leftIris);
+        this.iris.add(rightIris);
         
-        this.mesh.add(leftIris);
-        this.mesh.add(rightIris);
+        this.mesh.add(this.iris);
     }
 
     _createNose = () => {
-        const noseGeom = new THREE.CylinderGeometry(1, 8, 16, 3, 1, false);
+        const noseGeom = new THREE.Geometry();
+        noseGeom.vertices = [
+            new THREE.Vector3(0, 0, 10),
+            new THREE.Vector3(-7, 0, 0),
+            new THREE.Vector3(0, 18, 0),
+            new THREE.Vector3(7, 0, 0)
+        ];
+        noseGeom.faces = [
+            new THREE.Face3(0, 1, 3),
+            new THREE.Face3(2, 1, 0),
+            new THREE.Face3(0, 3, 2)
+        ];
         const noseMat = new THREE.MeshPhongMaterial({
             color: colors.nose,
             flatShading: THREE.FlatShading
         });
 
-        const nose = new THREE.Mesh(noseGeom, noseMat);
-        nose.position.set(0, 5, 28);
-        nose.castShadow = true;
-        this.mesh.add(nose);
+        this.nose = new THREE.Mesh(noseGeom, noseMat);
+        this.nose.position.set(0, -4, 25);
+        this.nose.castShadow = true;
+        this.mesh.add(this.nose);
     } 
     
     _createMouth = () => {
@@ -77,26 +155,54 @@ export default class Avatar {
             color: colors.lip
         });
 
-        const mouth = new THREE.Mesh(mouthGeom, mouthMat);
-        mouth.position.set(0, -20, 27);
-        this.mesh.add(mouth);
+        this.mouth = new THREE.Mesh(mouthGeom, mouthMat);
+        this.mouth.position.set(0, -20, 27);
+        this.mesh.add(this.mouth);
     }
 
-    lookAt = (target) => {
-        const minRad = Math.PI / 6;
-        if (target.x > minRad) {
-            target.x = minRad;
-        } else if (target.x < -minRad) {
-            target.x = -minRad;
+    _createEars = () => {
+        const earGeom = new THREE.BoxGeometry(4, 18, 12);
+        const earMat = new THREE.MeshPhongMaterial({
+            color: colors.skin,
+            flatShading: THREE.FlatShading
+        });
+
+        const leftEar = new THREE.Mesh(earGeom, earMat);
+        leftEar.position.set(33, 0, 0);
+        leftEar.rotation.y = -Math.PI / 10;
+        leftEar.castShadow = true;
+
+        const rightEar = leftEar.clone();
+        rightEar.position.set(-33, 0, 0);
+        rightEar.rotation.y = Math.PI / 10;
+        rightEar.castShadow = true;
+
+        this.ears = new THREE.Object3D();
+        this.ears.add(leftEar);
+        this.ears.add(rightEar);
+        this.ears.position.set(0, 5, -5);
+
+        this.mesh.add(this.ears);
+    }
+    
+    _createHair = () => {
+
+    }
+
+    _constrainHeadRotation(vector) {
+        const minRad = Math.PI / 5;
+        if (vector.x > minRad) {
+            vector.x = minRad;
+        } else if (vector.x < -minRad) {
+            vector.x = -minRad;
         }
 
-        if (target.y > minRad) {
-            target.y = minRad;
-        } else if (target.y < -minRad) {
-            target.y = -minRad;
+        if (vector.y > minRad) {
+            vector.y = minRad;
+        } else if (vector.y < -minRad) {
+            vector.y = -minRad;
         }
 
-        this.mesh.rotation.x -= (target.y + this.mesh.rotation.x) * 0.1;
-        this.mesh.rotation.y += (target.x - this.mesh.rotation.y) * 0.1;
+        return vector;
     }
 }
