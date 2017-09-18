@@ -8,7 +8,6 @@ export default class Avatar {
         this.mesh = new THREE.Object3D();
         this.mesh.name = 'avatar';
         this.mesh.castShadow = true;
-        //this.mesh.position.set(0, 60, 0);
 
         this._isBlinking = false;
         this._isConfusing = false;
@@ -22,6 +21,7 @@ export default class Avatar {
         this._createNose();
         this._createMouth();
         this._createEars();
+        this._createHair();
     }
 
     behave = () => {
@@ -72,7 +72,7 @@ export default class Avatar {
     }
 
     _createHead = () => {
-        const headGeom = new THREE.BoxGeometry(60, 56, 50);
+        const headGeom = new THREE.BoxGeometry(60, 56, 54);
         const headMat = new THREE.MeshPhongMaterial({
             color: colors.skin,
             flatShading: THREE.FlatShading
@@ -91,13 +91,13 @@ export default class Avatar {
         });
 
         const leftEye = new THREE.Mesh(eyeGeom, eyeMat);
-        leftEye.position.set(20, 0, 0);
+        leftEye.position.set(18, 0, 0);
 
         const rightEye = leftEye.clone();
-        rightEye.position.set(-20, 0, 0);
+        rightEye.position.set(-18, 0, 0);
 
         this.eyes = new THREE.Object3D();
-        this.eyes.position.set(0, 12, 27);
+        this.eyes.position.set(0, 6, 28);
         this.eyes.add(leftEye);
         this.eyes.add(rightEye);
         
@@ -112,13 +112,13 @@ export default class Avatar {
         });
 
         const leftIris = new THREE.Mesh(irisGeom, irisMat);
-        leftIris.position.set(17, 0, 0);
+        leftIris.position.set(15, 0, 0);
 
         const rightIris = leftIris.clone();
-        rightIris.position.set(-17, 0, 0);
+        rightIris.position.set(-15, 0, 0);
 
         this.iris = new THREE.Object3D();
-        this.iris.position.set(0, 12, 28);
+        this.iris.position.set(0, 6, 30);
         this.iris.add(leftIris);
         this.iris.add(rightIris);
         
@@ -144,7 +144,7 @@ export default class Avatar {
         });
 
         this.nose = new THREE.Mesh(noseGeom, noseMat);
-        this.nose.position.set(0, -4, 25);
+        this.nose.position.set(0, -8, 26);
         this.nose.castShadow = true;
         this.mesh.add(this.nose);
     } 
@@ -156,7 +156,7 @@ export default class Avatar {
         });
 
         this.mouth = new THREE.Mesh(mouthGeom, mouthMat);
-        this.mouth.position.set(0, -20, 27);
+        this.mouth.position.set(0, -22, 28);
         this.mesh.add(this.mouth);
     }
 
@@ -169,12 +169,12 @@ export default class Avatar {
 
         const leftEar = new THREE.Mesh(earGeom, earMat);
         leftEar.position.set(33, 0, 0);
-        leftEar.rotation.y = -Math.PI / 10;
+        leftEar.rotation.y = -Math.PI / 6;
         leftEar.castShadow = true;
 
         const rightEar = leftEar.clone();
         rightEar.position.set(-33, 0, 0);
-        rightEar.rotation.y = Math.PI / 10;
+        rightEar.rotation.y = Math.PI / 6;
         rightEar.castShadow = true;
 
         this.ears = new THREE.Object3D();
@@ -186,7 +186,74 @@ export default class Avatar {
     }
     
     _createHair = () => {
+        const hairGeom = new THREE.BoxGeometry(16, 18, 15);
+        const hairMat = new THREE.MeshLambertMaterial({
+            color: colors.hair
+        });
+        const hair = new THREE.Mesh(hairGeom, hairMat);
+        hair.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 9, 0));
 
+        this.hairs = new THREE.Object3D();
+        this.hairTop = new THREE.Object3D();
+
+        // create hair combined by 4*4 box grid
+        const startPosX = -24;
+        const startPosZ = -22;
+        let hairAngle = Math.PI / 2;
+        for (let i = 0; i < 16; i++) {
+            let h = hair.clone();
+            let row = i % 4; 
+            let col = Math.floor(i / 4);
+            h.position.set(startPosX + col * 16, 0, startPosZ + row * 15);
+            // Make hair cube in the middle a bit higher
+            if (col === 1) {
+                hairAngle = Math.PI / 3;
+            } else if (col === 2) {
+                hairAngle = Math.PI / 2.5;
+            } else {
+                hairAngle = Math.PI / 2;
+            }
+            h.scale.y = 1 * Math.cos(row / 3) / Math.sin(hairAngle);
+            this.hairTop.add(h);
+        }
+
+        this.hairTop.position.y += 28;
+        this.hairs.add(this.hairTop);
+
+        this.hairSide = new THREE.Object3D();
+
+        const skewMatrix = new THREE.Matrix4().set(
+            1, 0, 0, 0,
+            0, 1, 0.2, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        );
+
+        const hairSideGeom = new THREE.BoxGeometry(4, 36, 32);
+        const hairSideRight = new THREE.Mesh(hairSideGeom.applyMatrix(skewMatrix), hairMat);
+        const hairSideLeft = hairSideRight.clone();
+
+        hairSideRight.position.set(-30, 0, 0);
+        hairSideLeft.position.set(30, 0, 0);
+
+        this.hairSide.add(hairSideLeft);
+        this.hairSide.add(hairSideRight);
+        this.hairSide.position.set(0, 18, -10);
+        this.hairs.add(this.hairSide);
+
+        const hairBackGeom = new THREE.BoxGeometry(64, 62, 10);
+        this.hairBack = new THREE.Mesh(hairBackGeom, hairMat);
+        this.hairBack.position.set(0, 15, -25);
+        this.hairs.add(this.hairBack);
+
+        this.hairs.traverse((obj) => {
+            if (obj instanceof THREE.Mesh) {
+                obj.castShadow = true;
+                obj.receiveShadow = true;
+            }
+        });
+
+        this.mesh.add(this.hairs);
     }
 
     _constrainHeadRotation(vector) {
@@ -201,7 +268,7 @@ export default class Avatar {
             vector.y = minRad;
         } else if (vector.y < -minRad) {
             vector.y = -minRad;
-        }
+        } 
 
         return vector;
     }
