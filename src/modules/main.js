@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import Avatar from './Avatar';
 
-export function main () {
+export default function () {
     var WIDTH = window.innerWidth;
     var HEIGHT = window.innerHeight;
     var aspectRatio = WIDTH / HEIGHT;

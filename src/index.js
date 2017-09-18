@@ -1,5 +1,5 @@
 import 'normalize.css';
 import './style.css';
-import { main } from './modules/main';
+import main from './modules/main';
 
 main();
