@@ -12,54 +12,93 @@ export default class Avatar {
         this._isBlinking = false;
         this._isConfusing = false;
         this._isWearingGlasses = false;
-        this._lookAroundInterval = null;
+
+        this.willDizzy = false;
         this.isLookingAround = true;
 
         this._createHead();
-        this._createEyes();
+        this._createNormalEyes();
+        this._createDizzyEyes();
         this._createIris();
         this._createNose();
         this._createMouth();
         this._createEars();
         this._createHair();
+
+        //this.mesh.applyMatrix(new THREE.Matrix4().makeTranslation(0, 60, 0));
+
+        this._trackMouseSpeed();
     }
 
     behave = () => {
-        if (!this._isBlinking && Math.random() > 0.95) {
-            //this.confuse();
-        } else if (!this._isConfusing && Math.random() > 0.95) {
+        if (this.willDizzy) {
+            this.dizzy();
+        } else if (this._canBlink() && Math.random() > 0.99) {
             this.blink();
         }
+        //this.dizzy();
     }
 
     blink = () => {
+<<<<<<< HEAD
         if (!this._isBlinking) {
             this._isBlinking = true;
             TweenMax.to(this.eyes.scale, 0.07, {y: 0, yoyo: true, repeat: 1, delay: 3});
             TweenMax.to(this.iris.scale, 0.07, {y: 0.01, yoyo: true, repeat: 1, delay: 3, onComplete: () => {
                 this._isBlinking = false;
-            }});
-        }
+            }
+        });
     }
 
     confuse = () => {
-        if (!this._isConfusing) {
-            this._isConfusing = true;
-            TweenMax.to(this.eyes.scale, 0.1, {y: 0.2, repeat: 1});
-            TweenMax.to(this.iris.scale, 0.1, {y: 0.3, repeat: 1});
-            TweenMax.to(this.mouth.scale, 0.1, {x: 1.5, y: 0.5, repeat: 1, onComplete: () => {
-                TweenMax.to(this.eyes.scale, 0.1, {y: 1, repeat: 1, delay: 2});
-                TweenMax.to(this.iris.scale, 0.1, {y: 1, repeat: 1, delay: 2});
-                TweenMax.to(this.mouth.scale, 0.1, {x: 1, y: 1, repeat: 1, delay: 2, onComplete: () => {
-                    this._isConfusing = false;
-                }});
-            }});
+        const self = this;
+        this._isConfusing = true;
+        TweenMax.to(this.normalEyes.scale, 0.1, { y: 0.4, repeat: 1 });
+        TweenMax.to(this.iris.scale, 0.1, { y: 0.5, repeat: 1 });
+        TweenMax.to(this.mouth.scale, 0.1, {
+            x: 2, y: 0.5, repeat: 1, onComplete: () => {
+                TweenMax.to(this.normalEyes.scale, 0.1, { y: 1, repeat: 1, delay: 3 });
+                TweenMax.to(this.iris.scale, 0.1, { y: 1, repeat: 1, delay: 3 });
+                TweenMax.to(this.mouth.scale, 0.1, {
+                    x: 1, y: 1, repeat: 1, delay: 3, onComplete: () => {
+                        self._isConfusing = false;
+                    }
+                });
+            }
+        });
+    }
+
+    dizzy = () => {
+        const self = this;
+        if (this.willDizzy && !this._isDizzy) {
+            // The avatar will keep looking at the vertices of this circle, which
+            // gives the avatar a dizzy feeling
+            this._dizzyCircle = new THREE.CircleGeometry(30, 100);
+            this._dizzyCircle.applyMatrix(new THREE.Matrix4().makeTranslation(0, -70, -90));
+            this._dizzyCircle.applyMatrix(new THREE.Matrix4().makeRotationX(3.1));
+
+            // index of the vertices, ignore the first vertex that is the circle center
+            this._dizzyFrame = 1;
+            this._isDizzy = true;
+            this._toggleDizzyFace(this._isDizzy);
+        } 
+
+        if (this._isDizzy) {
+            // repeat from the first vertex
+            if (this._dizzyFrame > 100) this._dizzyFrame = 1;
+            this.mesh.lookAt(this._dizzyCircle.vertices[this._dizzyFrame++]);
+
+            setTimeout(() => {
+                this._isDizzy = false;
+                this.willDizzy = false;
+                this._toggleDizzyFace(this._isDizzy);
+            }, 5000);
+>>>>>>> 8153d55... mouse moves fast makes avatar dizzy
         }
     }
 
     lookAt = (target) => {
         const vector = this._constrainHeadRotation(target);
-
         if (!this.oldTargetLookPos) this.oldTargetLookPos = new THREE.Vector3();
         this.newTargetLookPos = vector.clone();
 
@@ -71,19 +110,36 @@ export default class Avatar {
         this.oldTargetLookPos = this.lookPos;
     }
 
+    _toggleDizzyFace = (dizzy) => {
+        this.dizzyEyes.visible = dizzy;
+        this.normalEyes.visible = !dizzy;
+        this.iris.visible = !dizzy;
+
+        const mouthScaleX = dizzy ? 0.7 : 1;
+        const mouthScaleY = dizzy ? 2 : 1;       
+        this.mouth.scale.set(mouthScaleX, mouthScaleY, 1);
+    }
+
+    _canBlink = () => {
+        return !this._isBlinking && !this._isConfusing && !this.willDizzy; 
+    }
+
+    _canConfuse = () => {
+        return !this._isBlinking && !this._isConfusing && !this.willDizzy && !this.isLookingAround; 
+    }
+
     _createHead = () => {
         const headGeom = new THREE.BoxGeometry(60, 56, 54);
         const headMat = new THREE.MeshPhongMaterial({
             color: colors.skin,
             flatShading: THREE.FlatShading
         });
-        const head = new THREE.Mesh(headGeom, headMat);
-        //head.castShadow = true;
-        head.receiveShadow = true;
-        this.mesh.add(head);
+        this.head = new THREE.Mesh(headGeom, headMat);
+        this.head.receiveShadow = true;
+        this.mesh.add(this.head);
     }
 
-    _createEyes = () => {
+    _createNormalEyes = () => {
         const eyeGeom = new THREE.BoxGeometry(20, 20, 1);
         const eyeMat = new THREE.MeshPhongMaterial({
             color: colors.eye,
@@ -96,12 +152,52 @@ export default class Avatar {
         const rightEye = leftEye.clone();
         rightEye.position.set(-18, 0, 0);
 
-        this.eyes = new THREE.Object3D();
-        this.eyes.position.set(0, 6, 28);
-        this.eyes.add(leftEye);
-        this.eyes.add(rightEye);
+        this.normalEyes = new THREE.Object3D();
+        this.normalEyes.position.set(0, 6, 28);
+        this.normalEyes.add(leftEye);
+        this.normalEyes.add(rightEye);
         
-        this.mesh.add(this.eyes);
+        this.mesh.add(this.normalEyes);
+    }
+
+    _createDizzyEyes = () => {
+        const eyeGeom = new THREE.PlaneGeometry(14, 3, 1, 1);
+        const eyeMat = new THREE.MeshLambertMaterial({
+            color: colors.iris
+        });
+
+        const leftEye1 = new THREE.Mesh(eyeGeom, eyeMat);
+        const leftEye2 = leftEye1.clone();
+
+        const rightEye1 = leftEye1.clone();
+        const rightEye2 = leftEye1.clone();
+
+        leftEye1.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, -7, 0));
+        leftEye1.rotation.z = Math.PI / 4;
+        leftEye2.rotation.z = -Math.PI / 4;
+        
+        rightEye1.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 7, 0));
+        rightEye1.rotation.z = Math.PI / 4;
+        rightEye2.rotation.z = -Math.PI / 4;
+
+        const leftEye = new THREE.Object3D();
+        const rightEye = leftEye.clone();
+
+        leftEye.add(leftEye1);
+        leftEye.add(leftEye2);
+        rightEye.add(rightEye1);
+        rightEye.add(rightEye2);
+
+        leftEye.position.set(17, 0, 0);        
+        rightEye.position.set(-17, 0, 0);
+
+        this.dizzyEyes = new THREE.Object3D();
+        this.dizzyEyes.position.set(0, 8, 28);
+        this.dizzyEyes.add(leftEye);
+        this.dizzyEyes.add(rightEye);
+        this.dizzyEyes.visible = false;
+
+        this.mesh.add(this.dizzyEyes);
     }
 
     _createIris = () => {
@@ -156,7 +252,7 @@ export default class Avatar {
         });
 
         this.mouth = new THREE.Mesh(mouthGeom, mouthMat);
-        this.mouth.position.set(0, -22, 28);
+        this.mouth.position.set(0, -20, 28);
         this.mesh.add(this.mouth);
     }
 
@@ -271,5 +367,44 @@ export default class Avatar {
         } 
 
         return vector;
+    }
+
+    /**
+     * Moves mouse fast can make the avatar dizzy
+     * Basic idea here is accumulate the distance of mouse movement
+     * within a certain amount of time
+     */
+    _trackMouseSpeed = () => {
+        let lastMouseX = -1;
+        let lastMouseY = -1;
+        let lastMouseTime;
+        let mouseTravel = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            let mouseX = e.clientX;
+            let mouseY = e.clientY;
+            if (lastMouseX > -1 && !this.willDizzy) {
+                mouseTravel += Math.max(Math.abs(mouseX - lastMouseX), Math.abs(mouseY - lastMouseY));
+            }
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
+        }, false);
+
+        const calculateDistance = () => {
+            let current = (new Date()).getTime();
+
+            if (lastMouseTime && lastMouseTime !== current) {
+                if (!this.willDizzy && mouseTravel > 6000) {
+                    this.willDizzy = true;
+                }
+                mouseTravel = 0;
+            }
+
+            lastMouseTime = current;
+            // trigger next round of checking
+            setTimeout(calculateDistance, 1500);
+        };
+
+        setTimeout(calculateDistance, 1500);
     }
 }
