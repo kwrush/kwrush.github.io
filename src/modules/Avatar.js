@@ -157,9 +157,9 @@ export default class Avatar {
 
     prepareToBeDizzy = () => {
         // Make a circle of which the avatar will keep looking at each vertex 
-        this._dizzyCircle = new THREE.CircleGeometry(30, 100);
-        this._dizzyCircle.applyMatrix(new THREE.Matrix4().makeTranslation(0, -70, -90));
-        this._dizzyCircle.applyMatrix(new THREE.Matrix4().makeRotationX(3.1));
+        this._dizzyCircle = new THREE.CircleGeometry(35, 100);
+        this._dizzyCircle.applyMatrix(new THREE.Matrix4().makeTranslation(0, -50, -100));
+        this._dizzyCircle.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI));
 
         // index of the vertex, ignore the first vertex that is the circle origin
         this._dizzyFrame = 1;

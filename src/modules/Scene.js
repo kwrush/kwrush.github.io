@@ -5,9 +5,10 @@ import { normalize } from '../utils';
 import Avatar from './Avatar';
 import Glasses from './Glasses';
 
-export default class Scene {
+export default class Scene extends THREE.EventDispatcher {
 
     constructor () {
+        super();
         this.container = document.querySelector('.world');
         this.deviceWidth = this.container.clientWidth;
         this.deviceHeight = this.container.clientHeight;
@@ -84,42 +85,35 @@ export default class Scene {
     createGlasses = () => {
         this.glasses = new Glasses();
         this.scene.add(this.glasses.mesh);
-        this.glasses.mesh.position.set(0, 0, 100);
+        this.glasses.mesh.position.set(0, -100, 60);
 
         this.dragControls = new DragControls(this.glasses.mesh, this.camera, this.renderer.domElement );
 
         this.dragControls.addEventListener('dragstart', e => {
             this.scene.add(this.glasses.mesh);
-            this.glasses.mesh.position.z = 50;
+            this.glasses.mesh.position.z = 60;
+            this.dispatchEvent({ type: 'glassesoff' });
         });
 
         this.dragControls.addEventListener('drag', e => {
-            this.glasses.mesh.position.z = 50;
+            this.glasses.mesh.position.z = 60;
         });
 
         this.dragControls.addEventListener('dragend', e => {
             const pos = this.glasses.mesh.position;
             if (Math.abs(pos.x) < 20 && Math.abs(pos.y) < 20) {
                 this.avatar.wearGlasses(this.glasses.mesh);
+                this.dispatchEvent({ type: 'glasseson' });
             }
         });
-    }
-
-    toggleWearingGlasses = () => {
-        const gl = this.avatar.isWearingGlasses();
-        if (!gl) {
-            this.avatar.wearGlasses(this.glasses.mesh);
-        } else {
-            this.scene.add(this.glasses.mesh);
-        }
     }
 
     toggleAvatarLookAround = (lookAround) => {
         if (lookAround) {
             if (this._lookAroundInterval === null) {
                 this._lookAroundInterval = setInterval(() => {
-                   this.mouseVector.set((Math.random() > 0.5 ? 1 : -1) * Math.random(),
-                        (Math.random() > 0.5 ? 1 : -1) * Math.random(), 0.5);
+                   this.mouseVector.set((Math.random() > 0.5 ? 0.8 : -0.8) * Math.random(),
+                        (Math.random() > 0.5 ? 0.8 : -0.8) * Math.random(), 0.5);
                 }, 5000);
             }
         } else {
@@ -136,6 +130,7 @@ export default class Scene {
 
         if (this.avatar.isDizzy) {
             this.avatar.dizzy();
+            this.mouseVector.set(0, 0, 0.5);
         } else {
             this.avatar.lookAt(this.mouseVector)
         };
@@ -227,7 +222,7 @@ export default class Scene {
             let current = (new Date()).getTime();
 
             if (lastMouseTime && lastMouseTime !== current) {
-                if (!this.avatar.isDizzy && mouseTravel > 10000) {
+                if (!this.avatar.isDizzy && mouseTravel > 9500) {
                     this.avatar.prepareToBeDizzy();
                 }
                 mouseTravel = 0;
