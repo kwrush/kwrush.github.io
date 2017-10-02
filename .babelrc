@@ -1,3 +1,8 @@
 {
-    "presets": ["es2015", "stage-0"]
+    "presets": ["env"],
+    "plugins": [
+        "transform-class-properties",
+        "transform-async-to-generator",
+        "transform-regenerator"
+    ]
 }
