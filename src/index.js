@@ -1,5 +1,6 @@
 import 'normalize.css';
 import './style.css';
-import main from './modules/main';
+import 'babel-polyfill';
+import init from './main';
 
 document.addEventListener('DOMContentLoaded', init, false);
