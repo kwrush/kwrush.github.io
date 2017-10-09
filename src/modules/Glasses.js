@@ -6,29 +6,29 @@ export default class Glasses {
         this.mesh = new THREE.Object3D();
         this.mesh.name = names.glasses;
 
-        const glassGeom = new THREE.TorusGeometry(16, 2, 16, 4);
-        const glassMat = new THREE.MeshPhongMaterial({
+        const bezelGeom = new THREE.TorusBufferGeometry(16, 2, 16, 4);
+        const bezelMat = new THREE.MeshPhongMaterial({
             color: colors.glasses,
             flatShading: true
         });
 
-        const glassLeft = new THREE.Mesh(glassGeom, glassMat);
-        glassLeft.rotation.z = Math.PI / 4;
-        const glassRight = glassLeft.clone();
+        const bezelLeft = new THREE.Mesh(bezelGeom, bezelMat);
+        bezelLeft.rotation.z = Math.PI / 4;
+        const bezelRight = bezelLeft.clone();
 
-        glassLeft.position.x = 18;
-        glassRight.position.x = -18;
+        bezelLeft.position.x = 18;
+        bezelRight.position.x = -18;
 
-        this.mesh.add(glassLeft);
-        this.mesh.add(glassRight);
+        this.mesh.add(bezelLeft);
+        this.mesh.add(bezelRight);
 
-        const clipGeom = new THREE.TorusGeometry(10, 1.2, 16, 4, Math.PI / 2);
-        const glassesClip = new THREE.Mesh(clipGeom, glassMat);
+        const clipGeom = new THREE.TorusBufferGeometry(10, 1.2, 16, 4, Math.PI / 2);
+        const glassesClip = new THREE.Mesh(clipGeom, bezelMat);
         glassesClip.rotation.z = Math.PI / 4;
 
         this.mesh.add(glassesClip);
 
-        const legGeom = new THREE.BoxGeometry(3, 3, 40);
+        const legGeom = new THREE.BoxBufferGeometry(3, 3, 40);
         const legMat = new THREE.MeshPhongMaterial({
             color: colors.glasses
         });
@@ -48,5 +48,21 @@ export default class Glasses {
                 obj.receiveShadow = true;
             }
         }); 
+
+        const lensGeom = new THREE.PlaneBufferGeometry(24, 24, 1, 1);
+        const lensMat = new THREE.MeshPhongMaterial({
+            transparent: true,
+            color: colors.eye,
+            opacity: 0.2,
+        });
+
+        const lensLeft = new THREE.Mesh(lensGeom, lensMat);
+        const lensRight = lensLeft.clone();
+
+        lensLeft.position.x = 18;
+        lensRight.position.x = -18;
+
+        this.mesh.add(lensLeft);
+        this.mesh.add(lensRight);
     }
 }
