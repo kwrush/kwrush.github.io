@@ -307,6 +307,7 @@ export default class Avatar {
         this.nose = new THREE.Mesh(noseGeom, noseMat);
         this.nose.position.set(0, -8, 26);
         this.nose.castShadow = true;
+        this.nose.receiveShadow = true;
         this.mesh.add(this.nose);
     } 
     

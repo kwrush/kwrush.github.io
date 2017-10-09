@@ -222,7 +222,7 @@ export default class Scene extends THREE.EventDispatcher {
             let current = (new Date()).getTime();
 
             if (lastMouseTime && lastMouseTime !== current) {
-                if (!this.avatar.isDizzy && mouseTravel > 9500) {
+                if (!this.avatar.isDizzy && mouseTravel > 9000) {
                     this.avatar.prepareToBeDizzy();
                 }
                 mouseTravel = 0;

@@ -25,6 +25,8 @@ export default function DragControls ( _object, _camera, _domElement ) {
 
 	var _selected = null, _hovered = null;
 
+	var _isDragging = false;
+
 	//
 
 	var scope = this;
@@ -59,14 +61,14 @@ export default function DragControls ( _object, _camera, _domElement ) {
 
 	}
 
-	function onDocumentMouseMove( event ) {
-
-		event.preventDefault();
-
+	function handleCursorMove (event) {
 		var rect = _domElement.getBoundingClientRect();
 
 		_mouse.x = ( ( event.clientX - rect.left ) / rect.width ) * 2 - 1;
 		_mouse.y = - ( ( event.clientY - rect.top ) / rect.height ) * 2 + 1;
+
+		_mouse.x = Math.abs(_mouse.x) > 0.5 ? Math.abs(_mouse.x) / _mouse.x * 0.5 : _mouse.x;
+		_mouse.y = Math.abs(_mouse.y) > 0.5 ? Math.abs(_mouse.y) / _mouse.y * 0.5 : _mouse.y; 
 
 		_raycaster.setFromCamera( _mouse, _camera );
 
@@ -79,10 +81,16 @@ export default function DragControls ( _object, _camera, _domElement ) {
 			}
 
 			scope.dispatchEvent( { type: 'drag', object: _selected } );
-
-			return;
-
 		}
+	}
+
+	function onDocumentMouseMove( event ) {
+
+		event.preventDefault();
+
+		handleCursorMove(event);
+
+		if (_isDragging) return;
 
 		_raycaster.setFromCamera( _mouse, _camera );
 
@@ -138,6 +146,8 @@ export default function DragControls ( _object, _camera, _domElement ) {
 
 			_domElement.style.cursor = 'move';
 
+			_isDragging = true;
+
 			scope.dispatchEvent( { type: 'dragstart', object: _selected } );
 
 		}
@@ -157,6 +167,7 @@ export default function DragControls ( _object, _camera, _domElement ) {
 
 		}
 
+		_isDragging = false;
 		_domElement.style.cursor = 'auto';
 
 	}
@@ -166,27 +177,7 @@ export default function DragControls ( _object, _camera, _domElement ) {
 		event.preventDefault();
 		event = event.changedTouches[ 0 ];
 
-		var rect = _domElement.getBoundingClientRect();
-
-		_mouse.x = ( ( event.clientX - rect.left ) / rect.width ) * 2 - 1;
-		_mouse.y = - ( ( event.clientY - rect.top ) / rect.height ) * 2 + 1;
-
-		_raycaster.setFromCamera( _mouse, _camera );
-
-		if ( _selected && scope.enabled ) {
-
-			if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
-
-				_selected.position.copy( _intersection.sub( _offset ) );
-
-			}
-
-			scope.dispatchEvent( { type: 'drag', object: _selected } );
-
-			return;
-
-		}
-
+		handleCursorMove(event);
 	}
 
 	function onDocumentTouchStart( event ) {
@@ -216,6 +207,7 @@ export default function DragControls ( _object, _camera, _domElement ) {
 			}
 
 			_domElement.style.cursor = 'move';
+			_isDragging = true;
 
 			scope.dispatchEvent( { type: 'dragstart', object: _selected } );
 
@@ -236,6 +228,7 @@ export default function DragControls ( _object, _camera, _domElement ) {
 
 		}
 
+		_isDragging = false;
 		_domElement.style.cursor = 'auto';
 
 	}
