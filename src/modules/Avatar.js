@@ -26,6 +26,9 @@ export default class Avatar {
         autoPlay(true);
     }
 
+    /**
+     * Perform behavior in order
+     */
     behave = async () => {
         if (this.isDizzy) {
             this._behaviorQueue[0] = this.stopDizzy;
@@ -50,6 +53,9 @@ export default class Avatar {
         this.behave();
     }
 
+    /**
+     * Blinking eyes
+     */
     blink = async () => {
         const tween = new Tween(this.normalEyes.scale)
 
@@ -73,6 +79,9 @@ export default class Avatar {
         }).then(() => tween.stop());
     }
 
+    /**
+     * Being confused
+     */
     confuse = async () => {
         let confuseFace = {
             mouthX: 1,
@@ -110,15 +119,20 @@ export default class Avatar {
         }).then(() => tween.stop());
     }
 
+    /**
+     * Being dizzy
+     */
     dizzy = () => {
         if (this.isDizzy && this._dizzyCircle) {
             // repeat from the first vertex
             if (this._dizzyFrame > 100) this._dizzyFrame = 1;
-            //console.log(this._dizzyCircle);
             this.mesh.lookAt(this._dizzyCircle.vertices[this._dizzyFrame++]);
         }
     }
 
+    /**
+     * Dtop being dizzy in 6s
+     */
     stopDizzy = async () => {
         return new Promise(resolve => {
             setTimeout(() => {
@@ -126,10 +140,13 @@ export default class Avatar {
                 this._dizzyCircle = null;
                 this._toggleDizzyFace(this.isDizzy);
                 resolve();
-            }, 5000);
+            }, 6000);
         });
     }
 
+    /**
+     * Avatar looks at the location of the given target
+     */
     lookAt = (target) => {
         const vector = this._constrainHeadRotation(target);
 
@@ -144,10 +161,16 @@ export default class Avatar {
         this.oldTargetLookPos = this.lookPos;
     }
 
+    /**
+     * Check wether or not the avatar is wearing glasses
+     */
     isWearingGlasses = () => {
         return !!this.mesh.getObjectByName(names.glasses);
     }
     
+    /**
+     * Put the glasses on
+     */
     wearGlasses = (glassesMesh) => {
         if (glassesMesh instanceof THREE.Object3D && glassesMesh.name === names.glasses) {
             this.mesh.add(glassesMesh);
@@ -155,6 +178,9 @@ export default class Avatar {
         }
     }
 
+    /**
+     * Doing calculations for "dizzy" animation
+     */
     prepareToBeDizzy = () => {
         // Make a circle of which the avatar will keep looking at each vertex 
         this._dizzyCircle = new THREE.CircleGeometry(35, 100);
@@ -167,7 +193,10 @@ export default class Avatar {
         this.isDizzy = true;
         this._toggleDizzyFace(this.isDizzy);
     }
- 
+    
+    /**
+     * Switch between dizzy face and normal face
+     */
     _toggleDizzyFace = (dizzy) => {
         this.dizzyEyes.visible = dizzy;
         this.normalEyes.visible = !dizzy;
@@ -178,6 +207,9 @@ export default class Avatar {
         this.mouth.scale.set(mouthScaleX, mouthScaleY, 1);
     }
 
+    /**
+     * Constrain rotation angle of head within a certain range
+     */
     _constrainHeadRotation = (vector) => {
         const minRad = Math.PI / 5;
         if (vector.x > minRad) {
@@ -195,6 +227,9 @@ export default class Avatar {
         return vector;
     }
 
+    /**
+     * Inner functions to create avatar
+     */
     _createHead = () => {
         const headGeom = new THREE.BoxBufferGeometry(60, 56, 54);
         const headMat = new THREE.MeshPhongMaterial({
