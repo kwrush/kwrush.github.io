@@ -21,17 +21,94 @@
 
 .intro {
     position: absolute;
-    top: 80px;
-    left: 0;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
     margin: 0 auto;
-    width: 100%;
-    height: 100px;
+    padding: 10px;
+    width: 340px;
     letter-spacing: 0.05em;
-    text-align: center;
+    text-align: left;
     user-select: none;
     -webkit-touch-callout: none;
     z-index: 0;
 }
+
+.intro h3 {
+    margin: 5px 0;
+    font-weight: normal;
+}
+
+.hobby {
+    position: relative;
+}
+
+.intro h3,
+.hobby {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.anime-word span {
+    position: absolute;
+    top: 0;
+    left: 3.6em;
+    opacity: 0;
+    overflow: hidden;
+    width: 100%;
+    color: #00896C;
+    white-space: nowrap;
+    font-size: 1em;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
+    animation: animeWord 15s ease-out infinite 0s;
+}
+
+.anime-word span:nth-child(2) {
+    animation-delay: 3s;
+    color: #0089A7;
+}
+
+.anime-word span:nth-child(3) {
+    animation-delay: 6s;
+    color: #4A225D;
+}
+
+.anime-word span:nth-child(4) {
+    animation-delay: 9s;
+    color: #D05A6E;
+}
+
+.anime-word span:nth-child(5) {
+    animation-delay: 12s;
+    color: #F05E1C;
+}
+
+@keyframes animeWord {
+    0% {
+        opacity: 1;
+        width: 0;
+    }
+
+    10% {
+        opacity: 0.8;
+        width: 0;
+    }
+
+    20% {
+        opacity: 1;
+        width: 100%;
+    }
+
+    30% {
+        width: 0;
+    }
+    
+    100% {
+        width: 0;
+        opacity: 0;
+    }
+}
+
 
 .blur {
     filter: blur(5px);

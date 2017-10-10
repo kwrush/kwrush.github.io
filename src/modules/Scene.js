@@ -25,6 +25,9 @@ export default class Scene extends THREE.EventDispatcher {
         this._trackMouseSpeed();
     }
 
+    /**
+     * Create the whole scene
+     */
     createScene = () => {
         const aspectRatio = this.deviceWidth / this.deviceHeight;
         const fieldOfView = 60;
@@ -108,6 +111,10 @@ export default class Scene extends THREE.EventDispatcher {
         });
     }
 
+    /**
+     * If the cursor is not in the window, the avatar starts to look around randomly,
+     * otherwise the avatar always look at the cursor
+     */
     toggleAvatarLookAround = (lookAround) => {
         if (lookAround) {
             if (this._lookAroundInterval === null) {
@@ -124,6 +131,9 @@ export default class Scene extends THREE.EventDispatcher {
         }
     }
 
+    /**
+     * Animation loop
+     */
     loop = () => {
         // swtich between looking at a random location or the cursor
         this.toggleAvatarLookAround(this.avatar.isLookingAround);
@@ -138,11 +148,17 @@ export default class Scene extends THREE.EventDispatcher {
         this.animate();
     }
 
+    /**
+     * Render next frame
+     */
     animate = () => {
         window.requestAnimationFrame(this.loop);
         this.renderer.render(this.scene, this.camera);
     }
 
+    /**
+     * Callbacks
+     */
     _handleMouseMove = evt => {
         evt.preventDefault();
         this._updateMouseVector(evt.clientX, evt.clientY);
@@ -188,10 +204,10 @@ export default class Scene extends THREE.EventDispatcher {
     }
 
     /**
-     * Mouse moves too fast can make the avatar dizzy
-     * Basic idea here is accumulate the distance of mouse movement
-     * within a certain amount of time, if the distance if too high then
-     * the avatar will be dizzy
+     * Moves the cursor quickly can make the avatar dizzy
+     * Basic idea here is to accumulate the distance of mouse movement
+     * within a certain amount of time. If the distance value is too high then
+     * the avatar will be dizzy for seconds
      */
     _trackMouseSpeed = () => {
         let lastMouseX = -1;
@@ -211,7 +227,7 @@ export default class Scene extends THREE.EventDispatcher {
         }, false);
 
         const calcualteDistance = (mouseX, mouseY) => {
-            if (lastMouseX > -1 && !this.willDizzy) {
+            if (lastMouseX > -1 && !this.avatar.isDizzy) {
                 mouseTravel += Math.max(Math.abs(mouseX - lastMouseX), Math.abs(mouseY - lastMouseY));
             }
             lastMouseX = mouseX;
@@ -222,7 +238,7 @@ export default class Scene extends THREE.EventDispatcher {
             let current = (new Date()).getTime();
 
             if (lastMouseTime && lastMouseTime !== current) {
-                if (!this.avatar.isDizzy && mouseTravel > 9000) {
+                if (!this.avatar.isDizzy && mouseTravel > 8000) {
                     this.avatar.prepareToBeDizzy();
                 }
                 mouseTravel = 0;
