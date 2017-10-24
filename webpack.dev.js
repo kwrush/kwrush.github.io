@@ -11,5 +11,5 @@ module.exports = merge(webpackCommon, {
         hot: true,
         port: 3001,
     },
-    devtool: 'inline-source-map',
+    devtool: 'cheap-module-eval-source-map',
 });

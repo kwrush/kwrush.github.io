@@ -4,7 +4,7 @@ import { colors, names } from '../constants';
 export default class Glasses {
     constructor () {
         this.mesh = new THREE.Object3D();
-        this.name = names.glasses;
+        this.mesh.name = names.glasses;
 
         const bezelGeom = new THREE.TorusBufferGeometry(16, 2, 16, 4);
         const bezelMat = new THREE.MeshPhongMaterial({

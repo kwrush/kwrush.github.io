@@ -5,6 +5,7 @@ const autoprefixer = require('autoprefixer');
 const webpackCommon = require('./webpack.common.js');
 
 module.exports = merge(webpackCommon, {
+	devtool: 'source-map',
     plugins: [
         new UglifyJSPlugin({
             sourceMap: true
