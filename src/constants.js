@@ -10,10 +10,6 @@ export const colors = {
 
 export const names = {
     glasses: '[THREE Glasses]',
-    avatar: '[THREE Avatar]'
-}
-
-export const emoji = {
-    heart: '\u2764',
-
+    avatar: '[THREE Avatar]',
+    scene: '[THREE Scene]'
 }

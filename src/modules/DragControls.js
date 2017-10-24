@@ -6,6 +6,7 @@
  */
 
 import * as THREE from 'three';
+import { normalize } from '../utils';
 
 export default function DragControls ( _object, _camera, _domElement ) {
 
@@ -64,8 +65,7 @@ export default function DragControls ( _object, _camera, _domElement ) {
 	function handleCursorMove (event) {
 		var rect = _domElement.getBoundingClientRect();
 
-		_mouse.x = ( ( event.clientX - rect.left ) / rect.width ) * 2 - 1;
-		_mouse.y = - ( ( event.clientY - rect.top ) / rect.height ) * 2 + 1;
+		_mouse = normalize(event.clientX, event.clientY, rect.width, rect.height);
 
 		_mouse.x = Math.abs(_mouse.x) > 0.5 ? Math.abs(_mouse.x) / _mouse.x * 0.5 : _mouse.x;
 		_mouse.y = Math.abs(_mouse.y) > 0.5 ? Math.abs(_mouse.y) / _mouse.y * 0.5 : _mouse.y; 
@@ -95,6 +95,7 @@ export default function DragControls ( _object, _camera, _domElement ) {
 		_raycaster.setFromCamera( _mouse, _camera );
 
 		var intersects = _raycaster.intersectObjects( _object.children );
+		console.log(intersects);
 
 		if ( intersects.length > 0 ) {
 
@@ -242,36 +243,6 @@ export default function DragControls ( _object, _camera, _domElement ) {
 	this.activate = activate;
 	this.deactivate = deactivate;
 	this.dispose = dispose;
-
-	// Backward compatibility
-
-	this.setObjects = function () {
-
-		console.error( 'THREE.DragControls: setObjects() has been removed.' );
-
-	};
-
-	this.on = function ( type, listener ) {
-
-		console.warn( 'THREE.DragControls: on() has been deprecated. Use addEventListener() instead.' );
-		scope.addEventListener( type, listener );
-
-	};
-
-	this.off = function ( type, listener ) {
-
-		console.warn( 'THREE.DragControls: off() has been deprecated. Use removeEventListener() instead.' );
-		scope.removeEventListener( type, listener );
-
-	};
-
-	this.notify = function ( type ) {
-
-		console.error( 'THREE.DragControls: notify() has been deprecated. Use dispatchEvent() instead.' );
-		scope.dispatchEvent( { type: type } );
-
-	};
-
 };
 
 DragControls.prototype = Object.create( THREE.EventDispatcher.prototype );

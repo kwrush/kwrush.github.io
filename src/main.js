@@ -7,7 +7,7 @@ export default function () {
         <div class="intro blur">
             <h3>Hello, I'm Kai! I live in the Netherlands.</h3>
             <div class="hobby">
-                <span>I love </span>
+                <div class="fix-word">I love&nbsp;</div>
                 <div class="anime-word">
                     <span>movies</span>
                     <span>drawing</span>
