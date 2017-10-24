@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import DragControls from './DragControls';
 import { names } from '../constants';
-import { normalize } from '../utils';
+import { normalize, distance, relativeCoordinate } from '../utils';
 import Avatar from './Avatar';
 import Glasses from './Glasses';
 
@@ -82,8 +82,8 @@ export default class Scene extends THREE.EventDispatcher {
     createAvatar = () => {
         this.avatar = new Avatar();
         this.scene.add(this.avatar.mesh);
+		// trigger the behavior loop
         this.avatar.behave();
-        //this.avatar.addEventListener('behave', e => console.log(e.message));
     }
     
     createGlasses = () => {
@@ -91,7 +91,7 @@ export default class Scene extends THREE.EventDispatcher {
         this.scene.add(this.glasses.mesh);
         this.glasses.mesh.position.set(0, -100, 60);
 
-        this.dragControls = new DragControls(this.glasses.mesh, this.camera, this.renderer.domElement );
+        this.dragControls = new DragControls(this.glasses.mesh, this.camera, this.renderer.domElement);
 
         this.dragControls.addEventListener('dragstart', e => {
             this.scene.add(this.glasses.mesh);
@@ -105,20 +105,24 @@ export default class Scene extends THREE.EventDispatcher {
 
         this.dragControls.addEventListener('dragend', e => {
             const pos = this.glasses.mesh.position;
-            if (Math.abs(pos.x) < 20 && Math.abs(pos.y) < 20) {
+            if (Math.abs(pos.x) <= 15 && Math.abs(pos.y) <= 15) {
                 this.avatar.wearGlasses(this.glasses.mesh);
-                this.dispatchEvent({ type: 'glasseson' });
+				// still blur text if the avatar is being dizzy
+				if (!this.avatar.isDizzy && this.avatar.isWearingGlasses()) {
+					this.dispatchEvent({ type: 'glasseson' });
+				}
             }
         });
     }
 
     /**
-     * If the cursor is not in the window, the avatar starts to look around randomly,
+     * If the cursor stays out of the window, the avatar would look around randomly,
      * otherwise the avatar always look at the cursor
      */
     toggleAvatarLookAround = (lookAround) => {
         if (lookAround) {
             if (this._lookAroundInterval === null) {
+				// Looking at a random location in every 5s
                 this._lookAroundInterval = setInterval(() => {
                    this.mouseVector.set((Math.random() > 0.5 ? 0.8 : -0.8) * Math.random(),
                         (Math.random() > 0.5 ? 0.8 : -0.8) * Math.random(), 0.5);
@@ -143,6 +147,9 @@ export default class Scene extends THREE.EventDispatcher {
             this.avatar.dizzy();
             this.mouseVector.set(0, 0, 0.5);
         } else {
+			if (this.avatar.isWearingGlasses()) {
+				this.dispatchEvent({ type: 'glasseson' });
+			}
             this.avatar.lookAt(this.mouseVector)
         };
 
@@ -162,7 +169,8 @@ export default class Scene extends THREE.EventDispatcher {
      */
     _handleMouseMove = evt => {
         evt.preventDefault();
-        this._updateMouseVector(evt.clientX, evt.clientY);
+		const coords = relativeCoordinate(evt);
+        this._updateMouseVector(coords.x, coords.y);
     }
 
     _handleMouseEnterAndOut = evt => {
@@ -178,7 +186,8 @@ export default class Scene extends THREE.EventDispatcher {
     _handleTouchMove = evt => {
         evt.preventDefault();
         evt = evt.changedTouches[0];
-        this._updateMouseVector(evt.clientX, evt.clientY);
+        const coords = relativeCoordinate(evt);
+        this._updateMouseVector(coords.x, coords.y);
     }
 
     _handleTouchStartAndEnd = evt => {
@@ -190,7 +199,7 @@ export default class Scene extends THREE.EventDispatcher {
         }
     }
 
-    _handleWindowResize = (e) => {
+    _handleWindowResize = () => {
         this.deviceWidth = this.container.clientWidth;
         this.deviceHeight = this.container.clientHeight;
         this.camera.aspect = this.deviceWidth / this.deviceHeight;
@@ -205,7 +214,7 @@ export default class Scene extends THREE.EventDispatcher {
     }
 
     /**
-     * Moves the cursor quickly can make the avatar dizzy
+     * Move the cursor quickly can make the avatar dizzy
      * Basic idea here is to accumulate the distance of mouse movement
      * within a certain amount of time. If the distance value is too high then
      * the avatar will be dizzy for seconds
@@ -215,21 +224,24 @@ export default class Scene extends THREE.EventDispatcher {
         let lastMouseY = -1;
         let lastMouseTime;
         let mouseTravel = 0;
+		let isTouch = false;
 
         this.container.addEventListener('mousemove', evt => {
             evt.preventDefault();
+			isTouch = !!evt.touches;
             calcualteDistance(evt.clientX, evt.clientY);
         }, false);
 
         this.container.addEventListener('touchmove', evt => {
             evt.preventDefault();
-            evt = evt.changedTouches[0];
+			isTouch = !!evt.touches;
+			evt = evt.changedTouches[0];
             calcualteDistance(evt.clientX, evt.clientY);
         }, false);
 
         const calcualteDistance = (mouseX, mouseY) => {
             if (lastMouseX > -1 && !this.avatar.isDizzy) {
-                mouseTravel += Math.max(Math.abs(mouseX - lastMouseX), Math.abs(mouseY - lastMouseY));
+				mouseTravel += distance({x: mouseX, y: mouseY}, {x: lastMouseX, y: lastMouseY});
             }
             lastMouseX = mouseX;
             lastMouseY = mouseY;
@@ -239,14 +251,15 @@ export default class Scene extends THREE.EventDispatcher {
             let current = (new Date()).getTime();
 
             if (lastMouseTime && lastMouseTime !== current) {
-                if (!this.avatar.isDizzy && mouseTravel > 8000) {
+				const threshold = isTouch ? 5000 : 7000;
+                if (!this.avatar.isDizzy && mouseTravel > threshold) {
                     this.avatar.prepareToBeDizzy();
                 }
                 mouseTravel = 0;
             }
 
             lastMouseTime = current;
-            // trigger next round of checking
+            // trigger next round
             setTimeout(checkTravelDistance, 2000);
         };
 

@@ -6,7 +6,7 @@ export default class Avatar {
 
     constructor () {
         this.mesh = new THREE.Object3D();
-        this.name = names.avatar;
+        this.mesh.name = names.avatar;
 
         this.isDizzy = false;
         this.isLookingAround = true;
@@ -22,6 +22,7 @@ export default class Avatar {
         this._createMouth();
         this._createEars();
         this._createHair();
+		
         // auto start tween
         autoPlay(true);
     }
@@ -31,10 +32,14 @@ export default class Avatar {
      */
     behave = async () => {
         if (this.isDizzy) {
-            this._behaviorQueue[0] = this.stopDizzy;
-        } else if (this._behaviorQueue.length < 3) {
+			
+			// postpone other behaviors in queue till
+			// not being dizzy
+            this._behaviorQueue.unshift(this.stopDizzy);
+			
+        } else if (this._behaviorQueue.length < 5) {
             const r = Math.random();
-            if (r > 0.4) {
+            if (r >= 0.4) {
                 this._behaviorQueue.push(this.blink);
             } else if (r < 0.4) {
                 this._behaviorQueue.push(this.confuse);
@@ -73,7 +78,8 @@ export default class Avatar {
                     }
                 })
                 .onComplete(() => {
-                    setTimeout(resolve, 1500 + Math.random() * 1000);
+					// time interval between two behaviors
+                    setTimeout(resolve, 2000 + Math.random() * 1000);
                 })
                 .start();
         }).then(() => tween.stop());
@@ -113,35 +119,10 @@ export default class Avatar {
                     }
                 })
                 .onComplete(() => {
-                    setTimeout(resolve, 1000 + Math.random() * 1000);
+                    setTimeout(resolve, 2000 + Math.random() * 1000);
                 })
                 .start();
         }).then(() => tween.stop());
-    }
-
-    /**
-     * Being dizzy
-     */
-    dizzy = () => {
-        if (this.isDizzy && this._dizzyCircle) {
-            // repeat from the first vertex
-            if (this._dizzyFrame > 100) this._dizzyFrame = 1;
-            this.mesh.lookAt(this._dizzyCircle.vertices[this._dizzyFrame++]);
-        }
-    }
-
-    /**
-     * Dtop being dizzy in 6s
-     */
-    stopDizzy = async () => {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                this.isDizzy = false;
-                this._dizzyCircle = null;
-                this._toggleDizzyFace(this.isDizzy);
-                resolve();
-            }, 6000);
-        });
     }
 
     /**
@@ -169,12 +150,14 @@ export default class Avatar {
     }
     
     /**
-     * Put the glasses on
+     * Put on the glasses
      */
-    wearGlasses = (glassesMesh) => {
-        if (glassesMesh instanceof THREE.Object3D && glassesMesh.name === names.glasses) {
-            this.mesh.add(glassesMesh);
-            glassesMesh.position.set(0, 5, 32);
+    wearGlasses = (glasses) => {
+        if (glasses instanceof THREE.Object3D && 
+                glasses.name === names.glasses) {
+
+            this.mesh.add(glasses);
+            glasses.position.set(0, 5, 32);
         }
     }
 
@@ -192,6 +175,31 @@ export default class Avatar {
 
         this.isDizzy = true;
         this._toggleDizzyFace(this.isDizzy);
+    }
+	
+	/**
+     * Being dizzy
+     */
+    dizzy = () => {
+        if (this.isDizzy && this._dizzyCircle) {
+            // repeat from the first vertex of the circle
+            if (this._dizzyFrame > 100) this._dizzyFrame = 1;
+            this.mesh.lookAt(this._dizzyCircle.vertices[this._dizzyFrame++]);
+        }
+    }
+
+    /**
+     * Dtop being dizzy in 6s
+     */
+    stopDizzy = async () => {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                this.isDizzy = false;
+                this._dizzyCircle = null;
+                this._toggleDizzyFace(this.isDizzy);
+                resolve();
+            }, 6000);
+        });
     }
     
     /**
