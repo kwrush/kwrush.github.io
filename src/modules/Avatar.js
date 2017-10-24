@@ -6,10 +6,10 @@ export default class Avatar {
 
     constructor () {
         this.mesh = new THREE.Object3D();
-        this.mesh.name = names.avatar;
+        this.name = names.avatar;
 
         this.isDizzy = false;
-        this.isLookingAround = false;
+        this.isLookingAround = true;
         this._isWearingGlasses = false;
 
         this._behaviorQueue = [];
@@ -34,7 +34,7 @@ export default class Avatar {
             this._behaviorQueue[0] = this.stopDizzy;
         } else if (this._behaviorQueue.length < 3) {
             const r = Math.random();
-            if (r > 0.5) {
+            if (r > 0.4) {
                 this._behaviorQueue.push(this.blink);
             } else if (r < 0.4) {
                 this._behaviorQueue.push(this.confuse);
@@ -73,7 +73,7 @@ export default class Avatar {
                     }
                 })
                 .onComplete(() => {
-                    setTimeout(resolve, 2000 + Math.random() * 1000);
+                    setTimeout(resolve, 1500 + Math.random() * 1000);
                 })
                 .start();
         }).then(() => tween.stop());

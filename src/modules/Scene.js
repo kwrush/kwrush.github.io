@@ -9,6 +9,7 @@ export default class Scene extends THREE.EventDispatcher {
 
     constructor () {
         super();
+        this.name = names.scene;
         this.container = document.querySelector('.world');
         this.deviceWidth = this.container.clientWidth;
         this.deviceHeight = this.container.clientHeight;

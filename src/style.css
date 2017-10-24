@@ -28,7 +28,7 @@
     padding: 10px;
     width: 340px;
     letter-spacing: 0.05em;
-    text-align: left;
+    text-align: center;
     user-select: none;
     -webkit-touch-callout: none;
     z-index: 0;
@@ -41,45 +41,66 @@
 
 .hobby {
     position: relative;
+    width: 100%;
 }
 
 .intro h3,
 .hobby {
-    font-size: 1.1em;
+    font-size: 1em;
     font-weight: bold;
+}
+
+.fix-word,
+.anime-word {
+    position: absolute;
+    top: 0;
+}
+
+
+.fix-word {
+    left: 0;
+    width: 48%;
+    text-align: right;
+}
+
+.anime-word {
+    right: 0;
+    width: 52%;
+    text-align: left;
 }
 
 .anime-word span {
     position: absolute;
     top: 0;
-    left: 3.6em;
+    left: 0;
     opacity: 0;
     overflow: hidden;
     width: 100%;
     color: #00896C;
+    text-align: left;
     white-space: nowrap;
     font-size: 1em;
     text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
-    animation: animeWord 15s ease-out infinite 0s;
+    animation: animeWord 12.5s ease-out infinite 0s;
 }
 
 .anime-word span:nth-child(2) {
-    animation-delay: 3s;
+    animation-delay: 2.5s;
     color: #0089A7;
 }
 
 .anime-word span:nth-child(3) {
-    animation-delay: 6s;
+    animation-delay: 5s;
     color: #4A225D;
 }
 
 .anime-word span:nth-child(4) {
-    animation-delay: 9s;
+    animation-delay: 7.5s;
     color: #D05A6E;
 }
 
 .anime-word span:nth-child(5) {
-    animation-delay: 12s;
+    animation-delay: 10s;
     color: #F05E1C;
 }
 
@@ -111,13 +132,13 @@
 
 
 .blur {
-    filter: blur(5px);
+    filter: blur(4px);
 }
 
 .tooltips {
     position: fixed;
-    bottom: 30px;
-    left: 30px;
+    bottom: 20px;
+    left: 20px;
     width: 32px;
     height: 32px;
     border-radius: 100%;
