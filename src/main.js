@@ -22,10 +22,13 @@ export default function () {
             <div class="tips">
                 <ul>
                     <li class="item">Glasses is useful for a clear view.</li>
-                    <li class="item">Don't keep moving your mouse/finger quickly.</li>
+                    <li class="item">Stun him by moving cursor/finger quickly.</li>
                 </ul>
             </div>
         </a>
+		<footer id="footer">
+			<a target="_blank" href="https://github.com/kwrush">GitHub</a>
+		</footer>
     `;
 
     root.innerHTML = content;
@@ -50,7 +53,7 @@ export default function () {
 		} else {
 			tooltips.classList.add('hover');
 		}
-	});
+	}, false);
 	
 	document.addEventListener('touchstart', evt => {
 		evt.preventDefault();
@@ -58,7 +61,7 @@ export default function () {
 		if (evt.target !== tooltips && tooltips.classList.contains('hover')) {
 			tooltips.classList.remove('hover');
 		}
-	})
+	}, false);
 
     scene.loop(); 
 }

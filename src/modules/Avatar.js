@@ -166,9 +166,11 @@ export default class Avatar {
      */
     prepareToBeDizzy = () => {
         // Make a circle of which the avatar will keep looking at each vertex 
-        this._dizzyCircle = new THREE.CircleGeometry(35, 100);
-        this._dizzyCircle.applyMatrix(new THREE.Matrix4().makeTranslation(0, -50, -100));
-        this._dizzyCircle.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI));
+		if (!this._dizzyCircle) {
+			this._dizzyCircle = new THREE.CircleGeometry(35, 100);
+			this._dizzyCircle.applyMatrix(new THREE.Matrix4().makeTranslation(0, -50, -100));
+			this._dizzyCircle.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI));
+		}
 
         // index of the vertex, ignore the first vertex that is the circle origin
         this._dizzyFrame = 1;
@@ -281,11 +283,9 @@ export default class Avatar {
         const rightEye1 = leftEye1.clone();
         const rightEye2 = leftEye1.clone();
 
-        leftEye1.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, -7, 0));
         leftEye1.rotation.z = Math.PI / 4;
         leftEye2.rotation.z = -Math.PI / 4;
-        
-        rightEye1.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 7, 0));
+
         rightEye1.rotation.z = Math.PI / 4;
         rightEye2.rotation.z = -Math.PI / 4;
 
@@ -301,7 +301,7 @@ export default class Avatar {
         rightEye.position.set(-17, 0, 0);
 
         this.dizzyEyes = new THREE.Object3D();
-        this.dizzyEyes.position.set(0, 8, 28);
+        this.dizzyEyes.position.set(0, 6, 28);
         this.dizzyEyes.add(leftEye);
         this.dizzyEyes.add(rightEye);
         this.dizzyEyes.visible = false;
