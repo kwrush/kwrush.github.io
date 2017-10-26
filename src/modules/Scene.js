@@ -37,7 +37,7 @@ export default class Scene extends THREE.EventDispatcher {
 
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-        this.camera.position.z = 400;
+        this.camera.position.z = 420;
         this.scene.add(this.camera);
 
         this.renderer = new THREE.WebGLRenderer({
@@ -59,8 +59,8 @@ export default class Scene extends THREE.EventDispatcher {
     }
 
     createLight = () => {
-        let hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0xaaaaaa, 0.7);
-        let shadowLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        let hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0xaaaaaa, 0.8);
+        let shadowLight = new THREE.DirectionalLight(0xffffff, 0.4);
 
         shadowLight.position.set(150, 350, 350);
         shadowLight.castShadow = true;
@@ -89,25 +89,25 @@ export default class Scene extends THREE.EventDispatcher {
     createGlasses = () => {
         this.glasses = new Glasses();
         this.scene.add(this.glasses.mesh);
-        this.glasses.mesh.position.set(0, -100, 60);
+        this.glasses.mesh.position.set(0, -100, 80);
 
         this.dragControls = new DragControls(this.glasses.mesh, this.camera, this.renderer.domElement);
 
         this.dragControls.addEventListener('dragstart', e => {
             this.scene.add(this.glasses.mesh);
-            this.glasses.mesh.position.z = 60;
+            this.glasses.mesh.position.z = 80;
             this.dispatchEvent({ type: 'glassesoff' });
         });
 
         this.dragControls.addEventListener('drag', e => {
-            this.glasses.mesh.position.z = 60;
+            this.glasses.mesh.position.z = 80;
         });
 
         this.dragControls.addEventListener('dragend', e => {
             const pos = this.glasses.mesh.position;
-            if (Math.abs(pos.x) <= 15 && Math.abs(pos.y) <= 15) {
+            if (Math.abs(pos.x) < 20 && Math.abs(pos.y) <= 20) {
                 this.avatar.wearGlasses(this.glasses.mesh);
-				// still blur text if the avatar is being dizzy
+				// still blur text if the avatar is a daze
 				if (!this.avatar.isDizzy && this.avatar.isWearingGlasses()) {
 					this.dispatchEvent({ type: 'glasseson' });
 				}
@@ -124,8 +124,8 @@ export default class Scene extends THREE.EventDispatcher {
             if (this._lookAroundInterval === null) {
 				// Looking at a random location in every 5s
                 this._lookAroundInterval = setInterval(() => {
-                   this.mouseVector.set((Math.random() > 0.5 ? 0.8 : -0.8) * Math.random(),
-                        (Math.random() > 0.5 ? 0.8 : -0.8) * Math.random(), 0.5);
+                   this.mouseVector.set((Math.random() > 0.5 ? 0.5 : -0.5) * Math.random(),
+                        (Math.random() > 0.5 ? 0.3 : -0.4) * Math.random(), 0.5);
                 }, 5000);
             }
         } else {

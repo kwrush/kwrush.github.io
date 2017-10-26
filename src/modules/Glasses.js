@@ -44,16 +44,15 @@ export default class Glasses {
 
         this.mesh.traverse(obj   => {
             if (obj instanceof THREE.Mesh) {
-                obj.castShadow    = true;
-                obj.receiveShadow = true;
+                obj.castShadow = true;
             }
         }); 
 
         const lensGeom = new THREE.PlaneBufferGeometry(24, 24, 1, 1);
         const lensMat = new THREE.MeshPhongMaterial({
             transparent: true,
-            color: colors.eye,
-            opacity: 0.2,
+            color: colors.lens,
+            opacity: 0.1,
         });
 
         const lensLeft = new THREE.Mesh(lensGeom, lensMat);

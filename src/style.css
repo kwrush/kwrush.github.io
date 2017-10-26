@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=Orbitron');
 
+*,
+html,
+body {
+	margin: 0;
+	box-sizing: border-box;
+}
+
 #root {
     position:relative;
     margin: 0 auto;
@@ -12,6 +19,7 @@
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
+	touch-action: none;
 }
 
 .world {
@@ -129,7 +137,7 @@
 
 .tooltips .tips {
     position: absolute;
-    width: 180px;
+    width: 200px;
     color: #FFFFFF;
     background: #5DADE2;
     font-size: 0.8em;
@@ -170,12 +178,29 @@
 }
 
 .tips .item {
-    padding: 10px 10px 10px 0;
-    line-height: 1.4;
+    padding: 8px 8px 8px 0;
+    line-height: 1.45;
 }
 
 .tips .item:last-child {
     padding-top: 0;
+}
+
+#footer  {
+	position: absolute;
+	bottom: 20px;
+	font-size: 0.9em;
+	z-index: 999;
+}
+
+#footer a {
+	cursor: pointer;
+	color: #5DADE2;
+	opacity: 0.8;
+}
+
+#footer a:hover {
+	opacity: 1;
 }
 
 

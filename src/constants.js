@@ -5,7 +5,8 @@ export const colors = {
     lip: 0xe35d6a,
     eye: 0xfcfcfc,
     iris: 0x090806,
-    glasses: 0x5dade2
+    glasses: 0x5dade2,
+	lens: 0x58b2dc
 };
 
 export const names = {

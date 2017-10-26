@@ -1,7 +1,7 @@
 /*
  * @author zz85 / https://github.com/zz85
  * @author mrdoob / http://mrdoob.com
- * Slightly modified to fit my requirements
+ * Modified to fit my requirements
  * Running this will allow you to drag three.js objects around the screen.
  */
 
@@ -62,15 +62,17 @@ export default class DragControls extends THREE.EventDispatcher {
 
 		this.raycaster.setFromCamera(this.mouse, this.camera);
 
-		const intersects = this.raycaster.intersectObjects( this.object.children );
+		const intersects = this.raycaster.intersectObjects(this.object.children);
 
 		if (intersects.length > 0) {
 
 			const obj = intersects[0].object;
-
+			
+			// Here to use the position of parent mesh 
+			// since we are moving the objects all together
 			this.plane.setFromNormalAndCoplanarPoint(
 				this.camera.getWorldDirection( this.plane.normal ), 
-				obj.position
+				obj.parent.position
 			);
 
 			if (this.hovered !== obj) {
@@ -102,13 +104,11 @@ export default class DragControls extends THREE.EventDispatcher {
 		const intersects = this.raycaster.intersectObjects(this.object.children);
 
 		if (intersects.length > 0) {
-			
-			// parent is the mesh wrapper so that we can move all
-			// the components within this mesh
-			this.selected = intersects[0].object.parent;
 
-			if ( this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
-				this.offset.copy( this.intersection ).sub( this.selected.position );
+			this.selected = intersects[0].object;
+
+			if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
+				this.offset.copy(this.intersection).sub(this.selected.parent.position);
 			}
 
 			this.domElement.style.cursor = 'move';
@@ -136,7 +136,7 @@ export default class DragControls extends THREE.EventDispatcher {
 	onDocumentTouchMove = (event) => {
 		
 		event.preventDefault();
-		event = event.changedTouches[ 0 ];
+		event = event.changedTouches[0];
 
 		this._handleCursorMove(event.clientX, event.clientY);
 	}
@@ -144,7 +144,7 @@ export default class DragControls extends THREE.EventDispatcher {
 	onDocumentTouchStart = ( event ) => {
 
 		event.preventDefault();
-		event = event.changedTouches[ 0 ];
+		event = event.changedTouches[0];
 
 		const rect = this.domElement.getBoundingClientRect();
 		const tmp = normalize(event.clientX - rect.left, event.clientY - rect.top, rect.width, rect.height);
@@ -153,20 +153,22 @@ export default class DragControls extends THREE.EventDispatcher {
 
 		this.raycaster.setFromCamera( this.mouse, this.camera );
 
-		const intersects = this.raycaster.intersectObjects( this.object.children );
+		const intersects = this.raycaster.intersectObjects(this.object.children);
 
 		if (intersects.length > 0) {
 
-			this.selected = intersects[0].object.parent;
+			this.selected = intersects[0].object;
 
+			// Here to use the position of parent mesh 
+			// since we are moving the objects all together
 			this.plane.setFromNormalAndCoplanarPoint(
 				this.camera.getWorldDirection( this.plane.normal ), 
-				this.selected.position
+				this.selected.parent.position
 			);
 
 			if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
 
-				this.offset.copy(this.intersection).sub(this.selected.position);
+				this.offset.copy(this.intersection).sub(this.selected.parent.position);
 
 			}
 
@@ -204,8 +206,22 @@ export default class DragControls extends THREE.EventDispatcher {
 		if (this.selected && this.enabled) {
 
 			if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
-
-				this.selected.position.copy(this.intersection.sub(this.offset));
+				const vect = this.intersection.sub(this.offset);
+				
+				const w = (rect.width + rect.left) / 2;
+				const h = (rect.height + rect.top) / 2;
+				const vx = Math.abs(vect.x);
+				const vy = Math.abs(vect.y);
+				
+				if (vx > 0.4 * w) {
+					vect.x = vect.x / vx * 0.4 * w;
+				}
+				
+				if (vy > 0.4 * h) {
+					vect.y = vect.y / vy * 0.4 * h;
+				}
+				
+				this.selected.parent.position.copy(vect);
 			}
 
 			this.dispatchEvent({ type: 'drag', object: this.selected });
