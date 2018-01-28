@@ -9,222 +9,222 @@ import * as THREE from 'three';
 import { normalize } from '../utils';
 
 export default class DragControls extends THREE.EventDispatcher {
-	constructor (object, camera, domElement) {
-		super();
-		
-		this.object = object;
-		this.camera = camera;
-		this.domElement = domElement;
-		
-		this.plane = new THREE.Plane();
-		this.raycaster = new THREE.Raycaster();
-		
-		this.mouse = new THREE.Vector2();
-		this.offset = new THREE.Vector3();
-		this.intersection = new THREE.Vector3();
-		
-		this.selected = null;
-		this.hovered = null;
-		
-		this.isDragging = false;
-		this.enabled = true;
-		
-		this.activate();
-	}
-	
-	activate = () => {
-		this.domElement.addEventListener( 'mousemove', this.onDocumentMouseMove, false );
-		this.domElement.addEventListener( 'mousedown', this.onDocumentMouseDown, false );
-		this.domElement.addEventListener( 'mouseup', this.onDocumentMouseCancel, false );
-		this.domElement.addEventListener( 'mouseleave', this.onDocumentMouseCancel, false );
-		this.domElement.addEventListener( 'touchmove', this.onDocumentTouchMove, false );
-		this.domElement.addEventListener( 'touchstart', this.onDocumentTouchStart, false );
-		this.domElement.addEventListener( 'touchend', this.onDocumentTouchEnd, false );
-	}
-	
-	deactivate = () => {
-		this.domElement.removeEventListener( 'mousemove', this.onDocumentMouseMove, false );
-		this.domElement.removeEventListener( 'mousedown', this.onDocumentMouseDown, false );
-		this.domElement.removeEventListener( 'mouseup', this.onDocumentMouseCancel, false );
-		this.domElement.removeEventListener( 'mouseleave', this.onDocumentMouseCancel, false );
-		this.domElement.removeEventListener( 'touchmove', this.onDocumentTouchMove, false );
-		this.domElement.removeEventListener( 'touchstart', this.onDocumentTouchStart, false );
-		this.domElement.removeEventListener( 'touchend', this.onDocumentTouchEnd, false );
-	}
-	
-	onDocumentMouseMove = ( event ) => {
+  constructor(object, camera, domElement) {
+    super();
 
-		event.preventDefault();
+    this.object = object;
+    this.camera = camera;
+    this.domElement = domElement;
 
-		this._handleCursorMove(event.clientX, event.clientY);
+    this.plane = new THREE.Plane();
+    this.raycaster = new THREE.Raycaster();
 
-		if (this.isDragging) return;
+    this.mouse = new THREE.Vector2();
+    this.offset = new THREE.Vector3();
+    this.intersection = new THREE.Vector3();
 
-		this.raycaster.setFromCamera(this.mouse, this.camera);
+    this.selected = null;
+    this.hovered = null;
 
-		const intersects = this.raycaster.intersectObjects(this.object.children);
+    this.isDragging = false;
+    this.enabled = true;
 
-		if (intersects.length > 0) {
+    this.activate();
+  }
 
-			const obj = intersects[0].object;
-			
-			// Here to use the position of parent mesh 
-			// since we are moving the objects all together
-			this.plane.setFromNormalAndCoplanarPoint(
-				this.camera.getWorldDirection( this.plane.normal ), 
-				obj.parent.position
-			);
+  activate = () => {
+    this.domElement.addEventListener('mousemove', this.onDocumentMouseMove, false);
+    this.domElement.addEventListener('mousedown', this.onDocumentMouseDown, false);
+    this.domElement.addEventListener('mouseup', this.onDocumentMouseCancel, false);
+    this.domElement.addEventListener('mouseleave', this.onDocumentMouseCancel, false);
+    this.domElement.addEventListener('touchmove', this.onDocumentTouchMove, false);
+    this.domElement.addEventListener('touchstart', this.onDocumentTouchStart, false);
+    this.domElement.addEventListener('touchend', this.onDocumentTouchEnd, false);
+  }
 
-			if (this.hovered !== obj) {
+  deactivate = () => {
+    this.domElement.removeEventListener('mousemove', this.onDocumentMouseMove, false);
+    this.domElement.removeEventListener('mousedown', this.onDocumentMouseDown, false);
+    this.domElement.removeEventListener('mouseup', this.onDocumentMouseCancel, false);
+    this.domElement.removeEventListener('mouseleave', this.onDocumentMouseCancel, false);
+    this.domElement.removeEventListener('touchmove', this.onDocumentTouchMove, false);
+    this.domElement.removeEventListener('touchstart', this.onDocumentTouchStart, false);
+    this.domElement.removeEventListener('touchend', this.onDocumentTouchEnd, false);
+  }
 
-				this.dispatchEvent({ type: 'hoveron', object: obj });
+  onDocumentMouseMove = (event) => {
 
-				this.domElement.style.cursor = 'pointer';
-				this.hovered = obj;
-			}
+    event.preventDefault();
 
-		} else {
+    this._handleCursorMove(event.clientX, event.clientY);
 
-			if (this.hovered !== null) {
+    if (this.isDragging) return;
 
-				this.dispatchEvent({ type: 'hoveroff', object: this.hovered });
+    this.raycaster.setFromCamera(this.mouse, this.camera);
 
-				this.domElement.style.cursor = 'auto';
-				this.hovered = null;
-			}
-		}
-	}
+    const intersects = this.raycaster.intersectObjects(this.object.children);
 
-	onDocumentMouseDown = (event) => {
+    if (intersects.length > 0) {
 
-		event.preventDefault();
+      const obj = intersects[0].object;
 
-		this.raycaster.setFromCamera(this.mouse, this.camera);
+      // Here to use the position of parent mesh 
+      // since we are moving the objects all together
+      this.plane.setFromNormalAndCoplanarPoint(
+        this.camera.getWorldDirection(this.plane.normal),
+        obj.parent.position
+      );
 
-		const intersects = this.raycaster.intersectObjects(this.object.children);
+      if (this.hovered !== obj) {
 
-		if (intersects.length > 0) {
+        this.dispatchEvent({ type: 'hoveron', object: obj });
 
-			this.selected = intersects[0].object;
+        this.domElement.style.cursor = 'pointer';
+        this.hovered = obj;
+      }
 
-			if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
-				this.offset.copy(this.intersection).sub(this.selected.parent.position);
-			}
+    } else {
 
-			this.domElement.style.cursor = 'move';
-			this.isDragging = true;
+      if (this.hovered !== null) {
 
-			this.dispatchEvent({ type: 'dragstart', object: this.selected });
-		}
-	}
+        this.dispatchEvent({ type: 'hoveroff', object: this.hovered });
 
-	onDocumentMouseCancel = (event) => {
+        this.domElement.style.cursor = 'auto';
+        this.hovered = null;
+      }
+    }
+  }
 
-		event.preventDefault();
+  onDocumentMouseDown = (event) => {
 
-		if (this.selected) {
+    event.preventDefault();
 
-			this.dispatchEvent({ type: 'dragend', object: this.selected });
-			this.selected = null;
-		}
+    this.raycaster.setFromCamera(this.mouse, this.camera);
 
-		this.isDragging = false;
-		this.domElement.style.cursor = 'auto';
+    const intersects = this.raycaster.intersectObjects(this.object.children);
 
-	}
+    if (intersects.length > 0) {
 
-	onDocumentTouchMove = (event) => {
-		
-		event.preventDefault();
-		event = event.changedTouches[0];
+      this.selected = intersects[0].object;
 
-		this._handleCursorMove(event.clientX, event.clientY);
-	}
+      if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
+        this.offset.copy(this.intersection).sub(this.selected.parent.position);
+      }
 
-	onDocumentTouchStart = ( event ) => {
+      this.domElement.style.cursor = 'move';
+      this.isDragging = true;
 
-		event.preventDefault();
-		event = event.changedTouches[0];
+      this.dispatchEvent({ type: 'dragstart', object: this.selected });
+    }
+  }
 
-		const rect = this.domElement.getBoundingClientRect();
-		const tmp = normalize(event.clientX - rect.left, event.clientY - rect.top, rect.width, rect.height);
-		this.mouse.x = tmp.x;
-		this.mouse.y = tmp.y;
+  onDocumentMouseCancel = (event) => {
 
-		this.raycaster.setFromCamera( this.mouse, this.camera );
+    event.preventDefault();
 
-		const intersects = this.raycaster.intersectObjects(this.object.children);
+    if (this.selected) {
 
-		if (intersects.length > 0) {
+      this.dispatchEvent({ type: 'dragend', object: this.selected });
+      this.selected = null;
+    }
 
-			this.selected = intersects[0].object;
+    this.isDragging = false;
+    this.domElement.style.cursor = 'auto';
 
-			// Here to use the position of parent mesh 
-			// since we are moving the objects all together
-			this.plane.setFromNormalAndCoplanarPoint(
-				this.camera.getWorldDirection( this.plane.normal ), 
-				this.selected.parent.position
-			);
+  }
 
-			if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
+  onDocumentTouchMove = (event) => {
 
-				this.offset.copy(this.intersection).sub(this.selected.parent.position);
+    event.preventDefault();
+    event = event.changedTouches[0];
 
-			}
+    this._handleCursorMove(event.clientX, event.clientY);
+  }
 
-			this.domElement.style.cursor = 'move';
-			this.isDragging = true;
+  onDocumentTouchStart = (event) => {
 
-			this.dispatchEvent({ type: 'dragstart', object: this.selected });
+    event.preventDefault();
+    event = event.changedTouches[0];
 
-		}
-	}
+    const rect = this.domElement.getBoundingClientRect();
+    const tmp = normalize(event.clientX - rect.left, event.clientY - rect.top, rect.width, rect.height);
+    this.mouse.x = tmp.x;
+    this.mouse.y = tmp.y;
 
-	onDocumentTouchEnd = ( event ) => {
+    this.raycaster.setFromCamera(this.mouse, this.camera);
 
-		event.preventDefault();
+    const intersects = this.raycaster.intersectObjects(this.object.children);
 
-		if (this.selected) {
+    if (intersects.length > 0) {
 
-			this.dispatchEvent({ type: 'dragend', object: this.selected });
-			this.selected = null;
-		}
+      this.selected = intersects[0].object;
 
-		this.isDragging = false;
-		this.domElement.style.cursor = 'auto';
-	}
-	
-	_handleCursorMove = (cursorX, cursorY) => {
-		const rect = this.domElement.getBoundingClientRect();
-		const tmp = normalize(cursorX - rect.left, cursorY - rect.top, rect.width, rect.height);
-		
-		this.mouse.x = tmp.x;
-		this.mouse.y = tmp.y;
+      // Here to use the position of parent mesh 
+      // since we are moving the objects all together
+      this.plane.setFromNormalAndCoplanarPoint(
+        this.camera.getWorldDirection(this.plane.normal),
+        this.selected.parent.position
+      );
 
-		this.raycaster.setFromCamera(this.mouse, this.camera);
+      if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
 
-		if (this.selected && this.enabled) {
+        this.offset.copy(this.intersection).sub(this.selected.parent.position);
 
-			if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
-				const vect = this.intersection.sub(this.offset);
-				
-				const w = (rect.width + rect.left) / 2;
-				const h = (rect.height + rect.top) / 2;
-				const vx = Math.abs(vect.x);
-				const vy = Math.abs(vect.y);
-				
-				if (vx > 0.4 * w) {
-					vect.x = vect.x / vx * 0.4 * w;
-				}
-				
-				if (vy > 0.4 * h) {
-					vect.y = vect.y / vy * 0.4 * h;
-				}
-				
-				this.selected.parent.position.copy(vect);
-			}
+      }
 
-			this.dispatchEvent({ type: 'drag', object: this.selected });
-		}
-	}
+      this.domElement.style.cursor = 'move';
+      this.isDragging = true;
+
+      this.dispatchEvent({ type: 'dragstart', object: this.selected });
+
+    }
+  }
+
+  onDocumentTouchEnd = (event) => {
+
+    event.preventDefault();
+
+    if (this.selected) {
+
+      this.dispatchEvent({ type: 'dragend', object: this.selected });
+      this.selected = null;
+    }
+
+    this.isDragging = false;
+    this.domElement.style.cursor = 'auto';
+  }
+
+  _handleCursorMove = (cursorX, cursorY) => {
+    const rect = this.domElement.getBoundingClientRect();
+    const tmp = normalize(cursorX - rect.left, cursorY - rect.top, rect.width, rect.height);
+
+    this.mouse.x = tmp.x;
+    this.mouse.y = tmp.y;
+
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    if (this.selected && this.enabled) {
+
+      if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
+        const vect = this.intersection.sub(this.offset);
+
+        const w = (rect.width + rect.left) / 2;
+        const h = (rect.height + rect.top) / 2;
+        const vx = Math.abs(vect.x);
+        const vy = Math.abs(vect.y);
+
+        if (vx > 0.4 * w) {
+          vect.x = vect.x / vx * 0.4 * w;
+        }
+
+        if (vy > 0.4 * h) {
+          vect.y = vect.y / vy * 0.4 * h;
+        }
+
+        this.selected.parent.position.copy(vect);
+      }
+
+      this.dispatchEvent({ type: 'drag', object: this.selected });
+    }
+  }
 }
