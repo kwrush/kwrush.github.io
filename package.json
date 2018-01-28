@@ -44,5 +44,8 @@
     "es6-tween": "^3.8.24",
     "normalize.css": "^7.0.0",
     "three": "^0.87.1"
+  }, 
+  "eslintConfig": {
+    "parserOptions": { "ecmaVersion": 6 }
   }
 }
