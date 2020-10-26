@@ -6,11 +6,11 @@ export const colors = {
   eye: 0xfcfcfc,
   iris: 0x090806,
   glasses: 0x5dade2,
-  lens: 0x58b2dc
+  lens: 0x58b2dc,
 };
 
 export const names = {
   glasses: '[THREE Glasses]',
   avatar: '[THREE Avatar]',
-  scene: '[THREE Scene]'
-}
+  scene: '[THREE Scene]',
+};

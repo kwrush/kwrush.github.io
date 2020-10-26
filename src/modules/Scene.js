@@ -6,7 +6,6 @@ import Avatar from './Avatar';
 import Glasses from './Glasses';
 
 export default class Scene extends THREE.EventDispatcher {
-
   constructor() {
     super();
     this.name = names.scene;
@@ -36,13 +35,18 @@ export default class Scene extends THREE.EventDispatcher {
     const farPlane = 2000;
 
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
+    this.camera = new THREE.PerspectiveCamera(
+      fieldOfView,
+      aspectRatio,
+      nearPlane,
+      farPlane,
+    );
     this.camera.position.z = 420;
     this.scene.add(this.camera);
 
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true
+      antialias: true,
     });
     this.renderer.setSize(this.deviceWidth, this.deviceHeight);
     this.renderer.shadowMap.enabled = true;
@@ -50,17 +54,33 @@ export default class Scene extends THREE.EventDispatcher {
     this.container.appendChild(this.renderer.domElement);
 
     this.container.addEventListener('mousemove', this._handleMouseMove, false);
-    this.container.addEventListener('mouseover', this._handleMouseEnterAndOut, false);
-    this.container.addEventListener('mouseout', this._handleMouseEnterAndOut, false);
+    this.container.addEventListener(
+      'mouseover',
+      this._handleMouseEnterAndOut,
+      false,
+    );
+    this.container.addEventListener(
+      'mouseout',
+      this._handleMouseEnterAndOut,
+      false,
+    );
     this.container.addEventListener('touchmove', this._handleTouchMove, false);
-    this.container.addEventListener('touchstart', this._handleTouchStartAndEnd, false);
-    this.container.addEventListener('touchend', this._handleTouchStartAndEnd, false);
+    this.container.addEventListener(
+      'touchstart',
+      this._handleTouchStartAndEnd,
+      false,
+    );
+    this.container.addEventListener(
+      'touchend',
+      this._handleTouchStartAndEnd,
+      false,
+    );
     window.addEventListener('resize', this._handleWindowResize, false);
-  }
+  };
 
   createLight = () => {
-    let hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0xaaaaaa, 0.8);
-    let shadowLight = new THREE.DirectionalLight(0xffffff, 0.4);
+    const hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0xaaaaaa, 0.8);
+    const shadowLight = new THREE.DirectionalLight(0xffffff, 0.4);
 
     shadowLight.position.set(150, 350, 350);
     shadowLight.castShadow = true;
@@ -77,33 +97,37 @@ export default class Scene extends THREE.EventDispatcher {
 
     this.scene.add(hemisphereLight);
     this.scene.add(shadowLight);
-  }
+  };
 
   createAvatar = () => {
     this.avatar = new Avatar();
     this.scene.add(this.avatar.mesh);
     // trigger the behavior loop
     this.avatar.behave();
-  }
+  };
 
   createGlasses = () => {
     this.glasses = new Glasses();
     this.scene.add(this.glasses.mesh);
     this.glasses.mesh.position.set(0, -100, 80);
 
-    this.dragControls = new DragControls(this.glasses.mesh, this.camera, this.renderer.domElement);
+    this.dragControls = new DragControls(
+      this.glasses.mesh,
+      this.camera,
+      this.renderer.domElement,
+    );
 
-    this.dragControls.addEventListener('dragstart', e => {
+    this.dragControls.addEventListener('dragstart', (e) => {
       this.scene.add(this.glasses.mesh);
       this.glasses.mesh.position.z = 80;
       this.dispatchEvent({ type: 'glassesoff' });
     });
 
-    this.dragControls.addEventListener('drag', e => {
+    this.dragControls.addEventListener('drag', (e) => {
       this.glasses.mesh.position.z = 80;
     });
 
-    this.dragControls.addEventListener('dragend', e => {
+    this.dragControls.addEventListener('dragend', (e) => {
       const pos = this.glasses.mesh.position;
       if (Math.abs(pos.x) < 20 && Math.abs(pos.y) <= 20) {
         this.avatar.wearGlasses(this.glasses.mesh);
@@ -113,7 +137,7 @@ export default class Scene extends THREE.EventDispatcher {
         }
       }
     });
-  }
+  };
 
   /**
    * If the cursor stays out of the window, the avatar would look around randomly,
@@ -124,8 +148,11 @@ export default class Scene extends THREE.EventDispatcher {
       if (this._lookAroundInterval === null) {
         // Looking at a random location in every 5s
         this._lookAroundInterval = setInterval(() => {
-          this.mouseVector.set((Math.random() > 0.5 ? 0.5 : -0.5) * Math.random(),
-            (Math.random() > 0.5 ? 0.3 : -0.4) * Math.random(), 0.5);
+          this.mouseVector.set(
+            (Math.random() > 0.5 ? 0.5 : -0.5) * Math.random(),
+            (Math.random() > 0.5 ? 0.3 : -0.4) * Math.random(),
+            0.5,
+          );
         }, 5000);
       }
     } else {
@@ -134,7 +161,7 @@ export default class Scene extends THREE.EventDispatcher {
         this._lookAroundInterval = null;
       }
     }
-  }
+  };
 
   /**
    * Animation loop
@@ -150,11 +177,11 @@ export default class Scene extends THREE.EventDispatcher {
       if (this.avatar.isWearingGlasses()) {
         this.dispatchEvent({ type: 'glasseson' });
       }
-      this.avatar.lookAt(this.mouseVector)
-    };
+      this.avatar.lookAt(this.mouseVector);
+    }
 
     this.animate();
-  }
+  };
 
   /**
    * Render next frame
@@ -162,18 +189,18 @@ export default class Scene extends THREE.EventDispatcher {
   animate = () => {
     window.requestAnimationFrame(this.loop);
     this.renderer.render(this.scene, this.camera);
-  }
+  };
 
   /**
    * Callbacks
    */
-  _handleMouseMove = evt => {
+  _handleMouseMove = (evt) => {
     evt.preventDefault();
     const coords = relativeCoordinate(evt);
     this._updateMouseVector(coords.x, coords.y);
-  }
+  };
 
-  _handleMouseEnterAndOut = evt => {
+  _handleMouseEnterAndOut = (evt) => {
     evt.preventDefault();
 
     if (evt.type === 'mouseover') {
@@ -181,23 +208,23 @@ export default class Scene extends THREE.EventDispatcher {
     } else if (evt.type === 'mouseout') {
       this.avatar.isLookingAround = true;
     }
-  }
+  };
 
-  _handleTouchMove = evt => {
+  _handleTouchMove = (evt) => {
     evt.preventDefault();
     evt = evt.changedTouches[0];
     const coords = relativeCoordinate(evt);
     this._updateMouseVector(coords.x, coords.y);
-  }
+  };
 
-  _handleTouchStartAndEnd = evt => {
+  _handleTouchStartAndEnd = (evt) => {
     evt.preventDefault();
     if (evt.type === 'touchstart') {
       this.avatar.isLookingAround = false;
     } else if (evt.type === 'touchend') {
       this.avatar.isLookingAround = true;
     }
-  }
+  };
 
   _handleWindowResize = () => {
     this.deviceWidth = this.container.clientWidth;
@@ -205,13 +232,13 @@ export default class Scene extends THREE.EventDispatcher {
     this.camera.aspect = this.deviceWidth / this.deviceHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(this.deviceWidth, this.deviceHeight);
-  }
+  };
 
   _updateMouseVector = (px, py) => {
     const mousePos = normalize(px, py, this.deviceWidth, this.deviceHeight);
     this.mouseVector.setX(mousePos.x);
     this.mouseVector.setY(mousePos.y);
-  }
+  };
 
   /**
    * Move the cursor quickly can make the avatar dizzy
@@ -226,38 +253,48 @@ export default class Scene extends THREE.EventDispatcher {
     let mouseTravel = 0;
     let isTouch = false;
 
-    this.container.addEventListener('mousemove', evt => {
-      evt.preventDefault();
-      isTouch = !!evt.touches;
-      calcualteDistance(evt.clientX, evt.clientY);
-    }, false);
+    this.container.addEventListener(
+      'mousemove',
+      (evt) => {
+        evt.preventDefault();
+        isTouch = !!evt.touches;
+        calcualteDistance(evt.clientX, evt.clientY);
+      },
+      false,
+    );
 
-    this.container.addEventListener('touchmove', evt => {
-      evt.preventDefault();
-      isTouch = !!evt.touches;
-      evt = evt.changedTouches[0];
-      calcualteDistance(evt.clientX, evt.clientY);
-    }, false);
+    this.container.addEventListener(
+      'touchmove',
+      (evt) => {
+        evt.preventDefault();
+        isTouch = !!evt.touches;
+        evt = evt.changedTouches[0];
+        calcualteDistance(evt.clientX, evt.clientY);
+      },
+      false,
+    );
 
     const calcualteDistance = (mouseX, mouseY) => {
       if (lastMouseX > -1 && !this.avatar.isDizzy) {
-        mouseTravel += distance({ x: mouseX, y: mouseY }, { x: lastMouseX, y: lastMouseY });
+        mouseTravel += distance(
+          { x: mouseX, y: mouseY },
+          { x: lastMouseX, y: lastMouseY },
+        );
       }
       lastMouseX = mouseX;
       lastMouseY = mouseY;
-    }
+    };
 
     const checkTravelDistance = () => {
-      let current = (new Date()).getTime();
+      const current = new Date().getTime();
 
       if (lastMouseTime && lastMouseTime !== current) {
-
         const threshold = isTouch ? 5000 : 7000;
 
         if (!this.avatar.isDizzy && mouseTravel > threshold) {
           this.avatar.prepareToBeDizzy();
         }
-        
+
         mouseTravel = 0;
       }
 
@@ -268,5 +305,5 @@ export default class Scene extends THREE.EventDispatcher {
 
     // start checking
     setTimeout(checkTravelDistance, 2000);
-  }
+  };
 }
