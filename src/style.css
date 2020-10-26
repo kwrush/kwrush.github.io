@@ -20,6 +20,8 @@ body {
   flex-direction: row;
   justify-content: center;
   touch-action: none;
+  background-color: black;
+  color: white;
 }
 
 .world {
@@ -31,6 +33,12 @@ body {
   z-index: 999;
 }
 
+.intro > h3,
+.hobby {
+  font-size: 1em;
+  font-weight: bold;
+}
+
 .intro {
   margin-top: 50px;
   width: 340px;
@@ -40,72 +48,29 @@ body {
   -webkit-touch-callout: none;
 }
 
-.intro h3 {
+.intro > h3 {
   margin: 5px 0;
   font-weight: normal;
 }
 
 .hobby {
-  position: relative;
+  display: flex;
   width: 100%;
-}
-
-.intro h3,
-.hobby {
-  font-size: 1em;
-  font-weight: bold;
-}
-
-.fix-word,
-.anime-word {
-  position: absolute;
-  top: 0;
-}
-
-.fix-word {
-  left: 0;
-  width: 48%;
-  text-align: right;
-}
-
-.anime-word {
-  right: 0;
-  width: 52%;
-  text-align: left;
-}
-
-.anime-word span {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  overflow: hidden;
-  width: 100%;
-  color: #00896c;
-  text-align: left;
   white-space: nowrap;
-  font-size: 1em;
-  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
-  animation: animeWord 12.5s ease-out infinite 0s;
+  justify-content: center;
 }
 
-.anime-word span:nth-child(2) {
-  animation-delay: 2.5s;
-  color: #0089a7;
+.hobby::before {
+  content: 'I love\00a0';
 }
 
-.anime-word span:nth-child(3) {
-  animation-delay: 5s;
-  color: #4a225d;
+.hobby:after {
+  content: '';
+  border-right: 2px solid white;
+  animation: blink-caret 0.8s step-end infinite;
 }
 
-.anime-word span:nth-child(4) {
-  animation-delay: 7.5s;
-  color: #d05a6e;
-}
-
-.anime-word span:nth-child(5) {
-  animation-delay: 10s;
+.hobby span {
   color: #f05e1c;
 }
 
@@ -202,28 +167,12 @@ body {
   opacity: 1;
 }
 
-@keyframes animeWord {
-  0% {
-    opacity: 1;
-    width: 0;
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
   }
-
-  10% {
-    opacity: 0.8;
-    width: 0;
-  }
-
-  20% {
-    opacity: 1;
-    width: 100%;
-  }
-
-  30% {
-    width: 0;
-  }
-
-  100% {
-    width: 0;
-    opacity: 0;
+  50% {
+    border-color: white;
   }
 }
