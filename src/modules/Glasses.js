@@ -9,7 +9,7 @@ export default class Glasses {
     const bezelGeom = new THREE.TorusBufferGeometry(16, 2, 16, 4);
     const bezelMat = new THREE.MeshPhongMaterial({
       color: colors.glasses,
-      flatShading: true
+      flatShading: true,
     });
 
     const bezelLeft = new THREE.Mesh(bezelGeom, bezelMat);
@@ -30,7 +30,7 @@ export default class Glasses {
 
     const legGeom = new THREE.BoxBufferGeometry(3, 3, 40);
     const legMat = new THREE.MeshPhongMaterial({
-      color: colors.glasses
+      color: colors.glasses,
     });
 
     const legLeft = new THREE.Mesh(legGeom, legMat);
@@ -42,7 +42,7 @@ export default class Glasses {
     this.mesh.add(legLeft);
     this.mesh.add(legRight);
 
-    this.mesh.traverse(obj => {
+    this.mesh.traverse((obj) => {
       if (obj instanceof THREE.Mesh) {
         obj.castShadow = true;
       }
@@ -64,4 +64,4 @@ export default class Glasses {
     this.mesh.add(lensLeft);
     this.mesh.add(lensRight);
   }
-};
+}

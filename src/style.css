@@ -3,235 +3,227 @@
 *,
 html,
 body {
-	margin: 0;
-	box-sizing: border-box;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 #root {
-    position:relative;
-    margin: 0 auto;
-    padding: 0;
-    width: 100%;
-    height: 100vh;
-    font-family: Orbitron, Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    overflow: hidden;
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	touch-action: none;
+  position: relative;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  font-family: Orbitron, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  touch-action: none;
 }
 
 .world {
-	position: absolute;
-	top: 0;
-	left: 0;
-    width: 100%;
-	height: 100%;
-	z-index: 999;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
 }
 
 .intro {
-	margin-top: 50px;
-    width: 340px;
-    letter-spacing: 0.05em;
-    text-align: center;
-    user-select: none;
-    -webkit-touch-callout: none;
+  margin-top: 50px;
+  width: 340px;
+  letter-spacing: 0.05em;
+  text-align: center;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .intro h3 {
-    margin: 5px 0;
-    font-weight: normal;
+  margin: 5px 0;
+  font-weight: normal;
 }
 
 .hobby {
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
 }
 
 .intro h3,
 .hobby {
-    font-size: 1em;
-    font-weight: bold;
+  font-size: 1em;
+  font-weight: bold;
 }
 
 .fix-word,
 .anime-word {
-    position: absolute;
-    top: 0;
+  position: absolute;
+  top: 0;
 }
 
-
 .fix-word {
-    left: 0;
-    width: 48%;
-    text-align: right;
+  left: 0;
+  width: 48%;
+  text-align: right;
 }
 
 .anime-word {
-    right: 0;
-    width: 52%;
-    text-align: left;
+  right: 0;
+  width: 52%;
+  text-align: left;
 }
 
 .anime-word span {
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    overflow: hidden;
-    width: 100%;
-    color: #00896C;
-    text-align: left;
-    white-space: nowrap;
-    font-size: 1em;
-    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
-    animation: animeWord 12.5s ease-out infinite 0s;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  overflow: hidden;
+  width: 100%;
+  color: #00896c;
+  text-align: left;
+  white-space: nowrap;
+  font-size: 1em;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
+  animation: animeWord 12.5s ease-out infinite 0s;
 }
 
 .anime-word span:nth-child(2) {
-    animation-delay: 2.5s;
-    color: #0089A7;
+  animation-delay: 2.5s;
+  color: #0089a7;
 }
 
 .anime-word span:nth-child(3) {
-    animation-delay: 5s;
-    color: #4A225D;
+  animation-delay: 5s;
+  color: #4a225d;
 }
 
 .anime-word span:nth-child(4) {
-    animation-delay: 7.5s;
-    color: #D05A6E;
+  animation-delay: 7.5s;
+  color: #d05a6e;
 }
 
 .anime-word span:nth-child(5) {
-    animation-delay: 10s;
-    color: #F05E1C;
+  animation-delay: 10s;
+  color: #f05e1c;
 }
 
 .blur {
-    filter: blur(4px);
+  filter: blur(4px);
 }
 
 .tooltips {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 32px;
-    height: 32px;
-    border-radius: 100%;
-    text-decoration: none;
-    text-align: center;
-    line-height: 32px;
-    font-size: 1.2em;
-    color: #FFFFFF;
-    background: #5DADE2;
-    display: inline-block;
-    z-index: 999;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+  text-decoration: none;
+  text-align: center;
+  line-height: 32px;
+  font-size: 1.2em;
+  color: #ffffff;
+  background: #5dade2;
+  display: inline-block;
+  z-index: 999;
 }
 
 .tooltips:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .tooltips .tips {
-    position: absolute;
-    width: 200px;
-    color: #FFFFFF;
-    background: #5DADE2;
-    font-size: 0.8em;
-    text-align: left;
-    visibility: hidden;
-    opacity: 0;
-    border-radius: 6px;
+  position: absolute;
+  width: 200px;
+  color: #ffffff;
+  background: #5dade2;
+  font-size: 0.8em;
+  text-align: left;
+  visibility: hidden;
+  opacity: 0;
+  border-radius: 6px;
 }
 
 .tooltips .tips:after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 10%;
-    margin-left: -8px;
-    width: 0;
-    height: 0;
-    border-top: 8px solid #5DADE2;
-    border-right: 8px solid transparent;
-    border-left: 8px solid transparent;
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 10%;
+  margin-left: -8px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid #5dade2;
+  border-right: 8px solid transparent;
+  border-left: 8px solid transparent;
 }
 
 .tooltips:hover .tips,
 .tooltips:active .tips,
 .tooltips.hover .tips {
-    visibility: visible;
-    opacity: 1;
-    bottom: 44px;
-    left: 50%;
-    margin-left: -18px;
-    z-index: 999;
-    transition: opacity 0.2s ease-in-out;
+  visibility: visible;
+  opacity: 1;
+  bottom: 44px;
+  left: 50%;
+  margin-left: -18px;
+  z-index: 999;
+  transition: opacity 0.2s ease-in-out;
 }
 
 .tips ul {
-    margin: 0;
-    padding: 0 0 0 2em;
+  margin: 0;
+  padding: 0 0 0 2em;
 }
 
 .tips .item {
-    padding: 8px 8px 8px 0;
-    line-height: 1.45;
+  padding: 8px 8px 8px 0;
+  line-height: 1.45;
 }
 
 .tips .item:last-child {
-    padding-top: 0;
+  padding-top: 0;
 }
 
-#footer  {
-	position: absolute;
-	bottom: 20px;
-	font-size: 0.9em;
-	z-index: 999;
+#footer {
+  position: absolute;
+  bottom: 20px;
+  font-size: 0.9em;
+  z-index: 999;
 }
 
 #footer a {
-	cursor: pointer;
-	color: #5DADE2;
-	opacity: 0.8;
+  cursor: pointer;
+  color: #5dade2;
+  opacity: 0.8;
 }
 
 #footer a:hover {
-	opacity: 1;
+  opacity: 1;
 }
-
 
 @keyframes animeWord {
-    0% {
-        opacity: 1;
-        width: 0;
-    }
+  0% {
+    opacity: 1;
+    width: 0;
+  }
 
-    10% {
-        opacity: 0.8;
-        width: 0;
-    }
+  10% {
+    opacity: 0.8;
+    width: 0;
+  }
 
-    20% {
-        opacity: 1;
-        width: 100%;
-    }
+  20% {
+    opacity: 1;
+    width: 100%;
+  }
 
-    30% {
-        width: 0;
-    }
-    
-    100% {
-        width: 0;
-        opacity: 0;
-    }
+  30% {
+    width: 0;
+  }
+
+  100% {
+    width: 0;
+    opacity: 0;
+  }
 }
-
-
-
-
-
-

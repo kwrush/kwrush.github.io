@@ -8,8 +8,8 @@
  */
 export function normalize(x, y, width, height) {
   return {
-    x: x / width * 2 - 1,
-    y: -y / height * 2 + 1
+    x: (x / width) * 2 - 1,
+    y: (-y / height) * 2 + 1,
   };
 }
 
@@ -32,6 +32,6 @@ export function relativeCoordinate(event) {
   const bounds = event.target.getBoundingClientRect();
   return {
     x: event.clientX - bounds.left,
-    y: event.clientY - bounds.top
+    y: event.clientY - bounds.top,
   };
 }

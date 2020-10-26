@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const merge = require('webpack-merge');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const WebpackCdnPlugin = require('webpack-cdn-plugin');
-const autoprefixer = require('autoprefixer');
 const webpackCommon = require('./webpack.common.js');
 
 module.exports = merge(webpackCommon, {
@@ -13,18 +12,18 @@ module.exports = merge(webpackCommon, {
         {
           name: 'three',
           var: 'THREE',
-          path: 'build/three.min.js'
-        }
+          path: 'build/three.min.js',
+        },
       ],
-      publicPath: '/node_modules'
+      publicPath: '../node_modules',
     }),
     new UglifyJSPlugin({
-      sourceMap: true
+      sourceMap: true,
     }),
     new webpack.DefinePlugin({
       'process.env': {
-        'NODE_ENV': JSON.stringify('production')
-      }
-    })
-  ]
-})
+        NODE_ENV: JSON.stringify('production'),
+      },
+    }),
+  ],
+});
