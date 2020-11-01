@@ -1,8 +1,7 @@
 {
-  "presets": ["env"],
+  "presets": ["@babel/preset-env"],
   "plugins": [
-    "transform-class-properties",
-    "transform-async-to-generator",
-    "transform-regenerator"
+    "transform-async-to-promises",
+    "@babel/plugin-proposal-class-properties"
   ]
 }

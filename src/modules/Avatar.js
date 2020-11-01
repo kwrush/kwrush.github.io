@@ -170,10 +170,12 @@ export default class Avatar {
     // Make a circle of which the avatar will keep looking at each vertex
     if (!this._dizzyCircle) {
       this._dizzyCircle = new THREE.CircleGeometry(35, 100);
-      this._dizzyCircle.applyMatrix(
+      this._dizzyCircle.applyMatrix4(
         new THREE.Matrix4().makeTranslation(0, -50, -100),
       );
-      this._dizzyCircle.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI));
+      this._dizzyCircle.applyMatrix4(
+        new THREE.Matrix4().makeRotationX(Math.PI),
+      );
     }
 
     // index of the vertex, ignore the first vertex that is the circle origin
@@ -402,7 +404,7 @@ export default class Avatar {
       color: colors.hair,
     });
     const hair = new THREE.Mesh(hairGeom, hairMat);
-    hair.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 9, 0));
+    hair.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, 9, 0));
 
     this.hairs = new THREE.Object3D();
     this.hairTop = new THREE.Object3D();
@@ -454,7 +456,7 @@ export default class Avatar {
 
     const hairSideGeom = new THREE.BoxBufferGeometry(4, 36, 32);
     const hairSideRight = new THREE.Mesh(
-      hairSideGeom.applyMatrix(skewMatrix),
+      hairSideGeom.applyMatrix4(skewMatrix),
       hairMat,
     );
     const hairSideLeft = hairSideRight.clone();
