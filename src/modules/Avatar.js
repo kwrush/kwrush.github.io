@@ -11,7 +11,7 @@ export default class Avatar {
     this.isLookingAround = true;
     this._isWearingGlasses = false;
 
-    this._behaviorQueue = [];
+    this._actions = [];
 
     this._createHead();
     this._createNormalEyes();
@@ -29,30 +29,25 @@ export default class Avatar {
   /**
    * Perform behavior in order
    */
-  behave = async () => {
+  act = async () => {
     if (this.isDizzy) {
-      // postpone other behaviors in queue till
-      // not being dizzy
-      this._behaviorQueue.unshift(this.stopDizzy);
-    } else if (this._behaviorQueue.length < 4) {
-      const r = Math.random();
-      if (r > 0.3) {
-        this._behaviorQueue.push(this.blink);
-      } else {
-        this._behaviorQueue.push(this.confuse);
-      }
+      // postpone actions in queue till not being dizzy
+      this._actions.unshift(this.stopDizzy);
+    } else if (this._actions.length < 5) {
+      const nextAction = Math.random() > 0.4 ? this.blink : this.confuse;
+      this._actions.push(nextAction);
     }
 
     // Execute next behavior
-    if (this._behaviorQueue.length > 0) {
+    if (this._actions.length > 0) {
       try {
-        await this._behaviorQueue[0].call();
-      } finally {
-        this._behaviorQueue.shift();
+        await this._actions.shift().call();
+      } catch (e) {
+        console.error(e.message);
       }
     }
 
-    this.behave();
+    this.act();
   };
 
   /**

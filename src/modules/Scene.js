@@ -103,7 +103,7 @@ export default class Scene extends THREE.EventDispatcher {
     this.avatar = new Avatar();
     this.scene.add(this.avatar.mesh);
     // trigger the behavior loop
-    this.avatar.behave();
+    this.avatar.act();
   };
 
   createGlasses = () => {
@@ -286,10 +286,10 @@ export default class Scene extends THREE.EventDispatcher {
     };
 
     const checkTravelDistance = () => {
-      const current = new Date().getTime();
+      const current = Date.now();
 
       if (lastMouseTime && lastMouseTime !== current) {
-        const threshold = isTouch ? 5000 : 7000;
+        const threshold = isTouch ? 3000 : 4000;
 
         if (!this.avatar.isDizzy && mouseTravel > threshold) {
           this.avatar.prepareToBeDizzy();
@@ -300,10 +300,10 @@ export default class Scene extends THREE.EventDispatcher {
 
       lastMouseTime = current;
       // trigger next round
-      setTimeout(checkTravelDistance, 2000);
+      setTimeout(checkTravelDistance, 1200);
     };
 
     // start checking
-    setTimeout(checkTravelDistance, 2000);
+    setTimeout(checkTravelDistance, 1200);
   };
 }
