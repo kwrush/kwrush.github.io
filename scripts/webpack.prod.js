@@ -6,6 +6,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const webpackCommon = require('./webpack.common.js');
 const { outputPath } = require('./path.js');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = merge(webpackCommon, {
   mode: 'production',
@@ -17,7 +18,7 @@ module.exports = merge(webpackCommon, {
   devtool: 'source-map',
   optimization: {
     minimize: true,
-    minimizer: [new TerserPlugin({ parallel: true })],
+    minimizer: [new TerserPlugin({ parallel: true }), new CssMinimizerPlugin()],
   },
   module: {
     rules: [
@@ -43,6 +44,11 @@ module.exports = merge(webpackCommon, {
           name: 'three',
           var: 'THREE',
           path: 'build/three.min.js',
+        },
+        {
+          name: '@tweenjs/tween.js',
+          var: 'TWEEN',
+          path: 'dist/tween.umd.js',
         },
       ],
       publicPath: '../node_modules',

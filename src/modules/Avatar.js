@@ -31,7 +31,7 @@ export default class Avatar {
       // postpone actions in queue till not being dizzy
       this._actions.unshift(this.stopDizzy);
     } else if (this._actions.length < 5) {
-      const nextAction = Math.random() > 0.4 ? this.blink : this.confuse;
+      const nextAction = Math.random() < 0.6 ? this.blink : this.confuse;
       this._actions.push(nextAction);
     }
 
@@ -68,7 +68,7 @@ export default class Avatar {
         })
         .onComplete(() => {
           // time interval between two behaviors
-          setTimeout(resolve, 2000 + Math.random() * 1000);
+          setTimeout(resolve, 1000 + Math.random() * 2000);
         })
         .start();
     }).then(() => tween.stop());
@@ -112,7 +112,7 @@ export default class Avatar {
           }
         })
         .onComplete(() => {
-          setTimeout(resolve, 2000 + Math.random() * 1000);
+          setTimeout(resolve, 2000 + Math.random() * 2000);
         })
         .start();
     }).then(() => tween.stop());

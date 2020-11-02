@@ -1,10 +1,10 @@
 import * as THREE from 'three';
+import TWEEN from '@tweenjs/tween.js';
 import DragControls from './DragControls';
 import { names } from '../constants';
 import { normalize, distance, relativeCoordinate } from '../utils';
 import Avatar from './Avatar';
 import Glasses from './Glasses';
-import TWEEN from '@tweenjs/tween.js';
 
 export default class Scene extends THREE.EventDispatcher {
   constructor() {
