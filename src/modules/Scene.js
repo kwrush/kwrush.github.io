@@ -4,6 +4,7 @@ import { names } from '../constants';
 import { normalize, distance, relativeCoordinate } from '../utils';
 import Avatar from './Avatar';
 import Glasses from './Glasses';
+import TWEEN from '@tweenjs/tween.js';
 
 export default class Scene extends THREE.EventDispatcher {
   constructor() {
@@ -188,6 +189,7 @@ export default class Scene extends THREE.EventDispatcher {
    */
   animate = () => {
     window.requestAnimationFrame(this.loop);
+    TWEEN.update();
     this.renderer.render(this.scene, this.camera);
   };
 

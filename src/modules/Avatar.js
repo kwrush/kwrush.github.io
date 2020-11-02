@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Tween, autoPlay } from 'es6-tween';
+import TWEEN from '@tweenjs/tween.js';
 import { colors, names } from '../constants';
 
 export default class Avatar {
@@ -21,9 +21,6 @@ export default class Avatar {
     this._createMouth();
     this._createEars();
     this._createHair();
-
-    // auto start tween
-    autoPlay(true);
   }
 
   /**
@@ -54,14 +51,14 @@ export default class Avatar {
    * Blinking eyes
    */
   blink = async () => {
-    const tween = new Tween(this.normalEyes.scale);
+    const tween = new TWEEN.Tween(this.normalEyes.scale);
 
     return new Promise((resolve) => {
       tween
         .to({ y: 0.01 }, 70)
         .repeat(1)
         .yoyo(true)
-        .on('update', () => {
+        .onUpdate(() => {
           if (this.isDizzy) {
             this.iris.scale.y = 1;
             resolve();
@@ -69,7 +66,7 @@ export default class Avatar {
             this.iris.scale.y = this.normalEyes.scale.y;
           }
         })
-        .on('complete', () => {
+        .onComplete(() => {
           // time interval between two behaviors
           setTimeout(resolve, 2000 + Math.random() * 1000);
         })
@@ -87,7 +84,7 @@ export default class Avatar {
       eyeY: 1,
     };
 
-    const tween = new Tween(confuseFace);
+    const tween = new TWEEN.Tween(confuseFace);
 
     return new Promise((resolve) => {
       tween
@@ -102,7 +99,7 @@ export default class Avatar {
         .repeat(1)
         .delay(2000 + Math.random() * 2000)
         .yoyo(true)
-        .on('update', () => {
+        .onUpdate(() => {
           if (this.isDizzy) {
             this.normalEyes.scale.y = 1;
             this.iris.scale.y = 1;
@@ -114,7 +111,7 @@ export default class Avatar {
             this.mouth.scale.y = confuseFace.mouthY;
           }
         })
-        .on('complete', () => {
+        .onComplete(() => {
           setTimeout(resolve, 2000 + Math.random() * 1000);
         })
         .start();
