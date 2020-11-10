@@ -112,6 +112,8 @@ export default class Scene extends THREE.EventDispatcher {
     this.scene.add(this.glasses.mesh);
     this.glasses.mesh.position.set(0, -100, 80);
 
+    this.avatar.wearGlasses(this.glasses.mesh);
+
     this.dragControls = new DragControls(
       this.glasses.mesh,
       this.camera,

@@ -9,7 +9,7 @@ const typeHobbies = (el, hobbies) => {
 
   function typing() {
     const fullText = hobbies[index];
-    let delay = 250 - Math.random() * 100;
+    let delay = 200 - Math.random() * 100;
 
     if (isDeleting) {
       currentText = fullText.substring(0, currentText.length - 1);
