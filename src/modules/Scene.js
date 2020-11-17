@@ -24,6 +24,9 @@ export default class Scene extends THREE.EventDispatcher {
     this.createGlasses();
 
     this._trackMouseSpeed();
+
+    // trigger the behavior loop
+    this.avatar.act();
   }
 
   /**
@@ -103,8 +106,6 @@ export default class Scene extends THREE.EventDispatcher {
   createAvatar = () => {
     this.avatar = new Avatar();
     this.scene.add(this.avatar.mesh);
-    // trigger the behavior loop
-    this.avatar.act();
   };
 
   createGlasses = () => {
@@ -146,7 +147,7 @@ export default class Scene extends THREE.EventDispatcher {
    * If the cursor stays out of the window, the avatar would look around randomly,
    * otherwise the avatar always look at the cursor
    */
-  toggleAvatarLookAround = (lookAround) => {
+  setAvatarLookAround = (lookAround) => {
     if (lookAround) {
       if (this._lookAroundInterval === null) {
         // Looking at a random location in every 5s
@@ -171,11 +172,13 @@ export default class Scene extends THREE.EventDispatcher {
    */
   loop = () => {
     // swtich between looking at a random location or the cursor
-    this.toggleAvatarLookAround(this.avatar.isLookingAround);
+    this.setAvatarLookAround(this.avatar.isLookingAround);
 
     if (this.avatar.isDizzy) {
       this.avatar.dizzy();
-      this.mouseVector.set(0, 0, 0.5);
+      if (this.avatar.isLookingAround) {
+        this.mouseVector.set(0, 0, 0.5);
+      }
     } else {
       if (this.avatar.isWearingGlasses()) {
         this.dispatchEvent({ type: 'glasseson' });

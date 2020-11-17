@@ -9,9 +9,8 @@ export default class Avatar {
 
     this.isDizzy = false;
     this.isLookingAround = true;
-    this._isWearingGlasses = false;
 
-    this._actions = [];
+    this._nextAction = null;
 
     this._createHead();
     this._createNormalEyes();
@@ -29,16 +28,15 @@ export default class Avatar {
   act = async () => {
     if (this.isDizzy) {
       // postpone actions in queue till not being dizzy
-      this._actions.unshift(this.stopDizzy);
-    } else if (this._actions.length < 5) {
-      const nextAction = Math.random() < 0.6 ? this.blink : this.confuse;
-      this._actions.push(nextAction);
+      this._nextAction = this.stopDizzy;
+    } else {
+      this._nextAction = Math.random() < 0.7 ? this.blink : this.confuse;
     }
 
     // Execute next behavior
-    if (this._actions.length > 0) {
+    if (this._nextAction != null) {
       try {
-        await this._actions.shift().call();
+        await this._nextAction.call();
       } catch (e) {
         console.error(e.message);
       }
@@ -97,7 +95,7 @@ export default class Avatar {
           100,
         )
         .repeat(1)
-        .delay(2000 + Math.random() * 2000)
+        .delay(1000 + Math.random() * 2000)
         .yoyo(true)
         .onUpdate(() => {
           if (this.isDizzy) {
@@ -172,9 +170,7 @@ export default class Avatar {
 
     // index of the vertex, ignore the first vertex that is the circle origin
     this._dizzyFrame = 1;
-
-    this.isDizzy = true;
-    this._toggleDizzyFace(this.isDizzy);
+    this._toggleDizzyFace();
   };
 
   /**
@@ -194,9 +190,8 @@ export default class Avatar {
   stopDizzy = async () => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        this.isDizzy = false;
         this._dizzyCircle = null;
-        this._toggleDizzyFace(this.isDizzy);
+        this._toggleDizzyFace();
         resolve();
       }, 6000);
     });
@@ -206,12 +201,13 @@ export default class Avatar {
    * Switch between dizzy face and normal face
    */
   _toggleDizzyFace = (dizzy) => {
-    this.dizzyEyes.visible = dizzy;
-    this.normalEyes.visible = !dizzy;
-    this.iris.visible = !dizzy;
+    this.isDizzy = !this.isDizzy;
+    this.dizzyEyes.visible = this.isDizzy;
+    this.normalEyes.visible = !this.isDizzy;
+    this.iris.visible = !this.isDizzy;
 
-    const mouthScaleX = dizzy ? 0.7 : 1;
-    const mouthScaleY = dizzy ? 2 : 1;
+    const mouthScaleX = this.isDizzy ? 0.7 : 1;
+    const mouthScaleY = this.isDizzy ? 2 : 1;
     this.mouth.scale.set(mouthScaleX, mouthScaleY, 1);
   };
 
