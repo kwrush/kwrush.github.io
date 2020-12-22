@@ -185,7 +185,7 @@ export default class Avatar {
   };
 
   /**
-   * Dtop being dizzy in 6s
+   * Stop being dizzy in 6s
    */
   stopDizzy = async () => {
     return new Promise((resolve) => {

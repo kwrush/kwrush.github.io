@@ -296,7 +296,7 @@ export default class Scene extends THREE.EventDispatcher {
       const current = Date.now();
 
       if (lastMouseTime && lastMouseTime !== current) {
-        const threshold = isTouch ? 3000 : 4000;
+        const threshold = isTouch ? 3500 : 5000;
 
         if (!this.avatar.isDizzy && mouseTravel > threshold) {
           this.avatar.prepareToBeDizzy();
