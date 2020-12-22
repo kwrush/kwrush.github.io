@@ -15,7 +15,6 @@ module.exports = merge(webpackCommon, {
     path: outputPath,
     filename: '[name].[hash].js',
   },
-  devtool: 'source-map',
   optimization: {
     minimize: true,
     minimizer: [new TerserPlugin({ parallel: true }), new CssMinimizerPlugin()],
