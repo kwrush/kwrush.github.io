@@ -25,7 +25,7 @@ export default class Avatar {
   /**
    * Perform behavior in order
    */
-  act = async () => {
+  act = () => {
     if (this.isDizzy) {
       // postpone actions in queue till not being dizzy
       this._nextAction = this.stopDizzy;
@@ -34,21 +34,17 @@ export default class Avatar {
     }
 
     // Execute next behavior
-    if (this._nextAction != null) {
-      try {
-        await this._nextAction.call();
-      } catch (e) {
+    return this._nextAction()
+      .then(() => this.act())
+      .catch((e) => {
         console.error(e.message);
-      }
-    }
-
-    this.act();
+      });
   };
 
   /**
    * Blinking eyes
    */
-  blink = async () => {
+  blink = () => {
     const tween = new TWEEN.Tween(this.normalEyes.scale);
 
     return new Promise((resolve) => {
@@ -75,7 +71,7 @@ export default class Avatar {
   /**
    * Being confused
    */
-  confuse = async () => {
+  confuse = () => {
     const confuseFace = {
       mouthX: 1,
       mouthY: 1,
@@ -187,7 +183,7 @@ export default class Avatar {
   /**
    * Stop being dizzy in 6s
    */
-  stopDizzy = async () => {
+  stopDizzy = () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         this._dizzyCircle = null;

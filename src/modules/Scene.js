@@ -159,11 +159,9 @@ export default class Scene extends THREE.EventDispatcher {
           );
         }, 5000);
       }
-    } else {
-      if (this._lookAroundInterval !== null) {
-        clearInterval(this._lookAroundInterval);
-        this._lookAroundInterval = null;
-      }
+    } else if (this._lookAroundInterval !== null) {
+      clearInterval(this._lookAroundInterval);
+      this._lookAroundInterval = null;
     }
   };
 
@@ -209,12 +207,7 @@ export default class Scene extends THREE.EventDispatcher {
 
   _handleMouseEnterAndOut = (evt) => {
     evt.preventDefault();
-
-    if (evt.type === 'mouseover') {
-      this.avatar.isLookingAround = false;
-    } else if (evt.type === 'mouseout') {
-      this.avatar.isLookingAround = true;
-    }
+    this.avatar.isLookingAround = evt.type === 'mouseout';
   };
 
   _handleTouchMove = (evt) => {
@@ -226,11 +219,7 @@ export default class Scene extends THREE.EventDispatcher {
 
   _handleTouchStartAndEnd = (evt) => {
     evt.preventDefault();
-    if (evt.type === 'touchstart') {
-      this.avatar.isLookingAround = false;
-    } else if (evt.type === 'touchend') {
-      this.avatar.isLookingAround = true;
-    }
+    this.avatar.isLookingAround = evt.type === 'touchend';
   };
 
   _handleWindowResize = () => {
