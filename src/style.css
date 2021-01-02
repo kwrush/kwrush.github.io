@@ -90,7 +90,7 @@ body {
   color: #ffffff;
   background: #5dade2;
   display: inline-block;
-  z-index: 999;
+  z-index: 9999;
 }
 
 .tooltips:hover {
@@ -149,10 +149,10 @@ body {
 }
 
 #footer {
-  position: absolute;
+  position: fixed;
   bottom: 20px;
   font-size: 0.9em;
-  z-index: 999;
+  z-index: 9999;
 }
 
 #footer a {
