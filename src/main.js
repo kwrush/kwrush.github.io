@@ -44,9 +44,10 @@ export default function () {
   const animatedText = document.querySelector('.hobby');
   const hobbies = [
     'watching movies.',
+    'playing video games.',
+    'reading manga.',
     'drawing.',
     'football.',
-    'playing RPG games.',
     'coding!',
   ];
 

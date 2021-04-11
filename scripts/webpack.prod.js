@@ -2,7 +2,6 @@ const { merge } = require('webpack-merge');
 const TerserPlugin = require('terser-webpack-plugin');
 const WebpackCdnPlugin = require('webpack-cdn-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const webpackCommon = require('./webpack.common.js');
 const { outputPath } = require('./path.js');
@@ -11,9 +10,10 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 module.exports = merge(webpackCommon, {
   mode: 'production',
   output: {
-    publicPath: 'dist/',
+    publicPath: 'dist',
     path: outputPath,
     filename: '[name].[hash].js',
+    clean: true,
   },
   optimization: {
     minimize: true,
@@ -36,7 +36,6 @@ module.exports = merge(webpackCommon, {
     ],
   },
   plugins: [
-    new CleanWebpackPlugin(),
     new WebpackCdnPlugin({
       modules: [
         {

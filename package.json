@@ -4,7 +4,7 @@
   "description": "Personal page",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --config scripts/webpack.dev.js",
+    "start": "webpack serve --config scripts/webpack.dev.js",
     "build": "webpack --config scripts/webpack.prod.js",
     "lint": "eslint . --ext .js --max-warnings 0",
     "format": "prettier --write ."
@@ -17,43 +17,41 @@
     "three.js",
     "GitHub Page"
   ],
-  "author": "kwrush",
+  "author": "Kai Wang(kwrush)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kwrush/kwrush.github.io/issues"
   },
   "homepage": "https://github.com/kwrush/kwrush.github.io#readme",
   "devDependencies": {
-    "@babel/cli": "^7.12.10",
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.11",
+    "@babel/cli": "^7.13.14",
+    "@babel/core": "^7.13.15",
+    "@babel/preset-env": "^7.13.15",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
     "babel-plugin-transform-async-to-promises": "^0.8.15",
-    "clean-webpack-plugin": "^3.0.0",
-    "css-loader": "^5.0.1",
-    "css-minimizer-webpack-plugin": "^1.2.0",
-    "eslint": "^7.18.0",
-    "eslint-config-prettier": "^6.12.0",
+    "css-loader": "^5.2.1",
+    "css-minimizer-webpack-plugin": "^2.0.0",
+    "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.1.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.1.0",
-    "html-webpack-plugin": "^4.5.1",
-    "mini-css-extract-plugin": "^1.3.4",
+    "eslint-plugin-promise": "^5.1.0",
+    "html-webpack-plugin": "^5.3.1",
+    "mini-css-extract-plugin": "^1.4.1",
     "prettier": "^2.2.1",
     "style-loader": "^2.0.0",
-    "terser-webpack-plugin": "^4.2.3",
-    "webpack": "^4.46.0",
+    "terser-webpack-plugin": "^5.1.1",
+    "webpack": "^5.31.2",
     "webpack-cdn-plugin": "^3.3.1",
-    "webpack-cli": "^3.3.12",
+    "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^18.6.4",
     "normalize.css": "^8.0.1",
-    "three": "^0.125.0"
+    "three": "^0.125.2"
   }
 }
