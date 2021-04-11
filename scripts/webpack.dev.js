@@ -1,4 +1,3 @@
-const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 
 const { outputPath, root } = require('./path.js');
@@ -31,6 +30,5 @@ module.exports = merge(webpackCommon, {
     hot: true,
     port: 3000,
   },
-  devtool: 'source-map',
-  plugins: [new webpack.HotModuleReplacementPlugin()],
+  devtool: 'eval-cheap-source-map',
 });

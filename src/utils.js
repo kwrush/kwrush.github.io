@@ -35,3 +35,13 @@ export function relativeCoordinate(event) {
     y: event.clientY - bounds.top,
   };
 }
+
+/**
+ * Return random number between min and max
+ * @param {number} min
+ * @param {number} max
+ * @returns number random number
+ */
+export function random(min, max) {
+  return min + Math.floor(Math.random() * (max - min + 1));
+}

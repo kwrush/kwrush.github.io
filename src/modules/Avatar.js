@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
 import { colors, names } from '../constants';
+import { random } from '../utils';
 
 export default class Avatar {
   constructor() {
@@ -62,7 +63,7 @@ export default class Avatar {
         })
         .onComplete(() => {
           // time interval between two behaviors
-          setTimeout(resolve, 1000 + Math.random() * 2000);
+          setTimeout(resolve, random(1000, 3000));
         })
         .start();
     }).then(() => tween.stop());
@@ -91,7 +92,7 @@ export default class Avatar {
           100,
         )
         .repeat(1)
-        .delay(1000 + Math.random() * 2000)
+        .delay(random(1000, 3000))
         .yoyo(true)
         .onUpdate(() => {
           if (this.isDizzy) {
@@ -106,7 +107,7 @@ export default class Avatar {
           }
         })
         .onComplete(() => {
-          setTimeout(resolve, 2000 + Math.random() * 2000);
+          setTimeout(resolve, random(2000, 4000));
         })
         .start();
     }).then(() => tween.stop());
@@ -153,7 +154,7 @@ export default class Avatar {
    * Doing calculations for "dizzy" animation
    */
   prepareToBeDizzy = () => {
-    // Make a circle of which the avatar will keep looking at each vertex
+    // The avatar keeps looking at each circle vertext in order when it's getting dizzy
     if (!this._dizzyCircle) {
       this._dizzyCircle = new THREE.CircleGeometry(35, 100);
       this._dizzyCircle.applyMatrix4(
@@ -176,7 +177,12 @@ export default class Avatar {
     if (this.isDizzy && this._dizzyCircle) {
       // repeat from the first vertex of the circle
       if (this._dizzyFrame > 100) this._dizzyFrame = 1;
-      this.mesh.lookAt(this._dizzyCircle.vertices[this._dizzyFrame++]);
+      const vector = new THREE.Vector3();
+      vector.fromBufferAttribute(
+        this._dizzyCircle.getAttribute('position'),
+        this._dizzyFrame++,
+      );
+      this.mesh.lookAt(vector);
     }
   };
 
@@ -189,14 +195,14 @@ export default class Avatar {
         this._dizzyCircle = null;
         this._toggleDizzyFace();
         resolve();
-      }, 6000);
+      }, 5000);
     });
   };
 
   /**
    * Switch between dizzy face and normal face
    */
-  _toggleDizzyFace = (dizzy) => {
+  _toggleDizzyFace = () => {
     this.isDizzy = !this.isDizzy;
     this.dizzyEyes.visible = this.isDizzy;
     this.normalEyes.visible = !this.isDizzy;
@@ -320,18 +326,28 @@ export default class Avatar {
   };
 
   _createNose = () => {
-    const noseGeom = new THREE.Geometry();
-    noseGeom.vertices = [
-      new THREE.Vector3(0, 0, 10),
+    const noseGeom = new THREE.BufferGeometry();
+
+    const points = [
+      new THREE.Vector3(0, 18, 0),
       new THREE.Vector3(-7, 0, 0),
+      new THREE.Vector3(0, 0, 10),
+
+      new THREE.Vector3(0, 0, 10),
+      new THREE.Vector3(7, 0, 0),
+      new THREE.Vector3(0, 18, 0),
+
+      new THREE.Vector3(-7, 0, 0),
+      new THREE.Vector3(7, 0, 0),
+      new THREE.Vector3(0, 0, 10),
+
       new THREE.Vector3(0, 18, 0),
       new THREE.Vector3(7, 0, 0),
+      new THREE.Vector3(-7, 0, 0),
     ];
-    noseGeom.faces = [
-      new THREE.Face3(0, 1, 3),
-      new THREE.Face3(2, 1, 0),
-      new THREE.Face3(0, 3, 2),
-    ];
+    noseGeom.setFromPoints(points);
+    noseGeom.computeVertexNormals();
+
     const noseMat = new THREE.MeshPhongMaterial({
       color: colors.nose,
       flatShading: THREE.FlatShading,
