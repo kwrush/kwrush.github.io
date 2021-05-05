@@ -12,7 +12,7 @@ module.exports = merge(webpackCommon, {
   output: {
     publicPath: 'dist',
     path: outputPath,
-    filename: '[name].[hash].js',
+    filename: '[name].[chunkhash:8].js',
     clean: true,
   },
   optimization: {
@@ -52,7 +52,7 @@ module.exports = merge(webpackCommon, {
       publicPath: '../node_modules',
     }),
     new MiniCssExtractPlugin({
-      filename: `[name].[hash].css`,
+      filename: `[name].[contenthash:8].css`,
     }),
   ],
 });
