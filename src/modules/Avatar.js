@@ -117,7 +117,9 @@ export default class Avatar {
    * Avatar looks at the location of the given target
    */
   lookAt = (target) => {
-    const vector = this._constrainHeadRotation(target);
+    // Constrain rotation angle of head within a certain range
+    const radian = Math.PI / 6;
+    const vector = target.clampScalar(-radian, radian);
 
     if (!this.oldTargetLookPos) this.oldTargetLookPos = new THREE.Vector3();
     this.newTargetLookPos = vector.clone();
@@ -211,26 +213,6 @@ export default class Avatar {
     const mouthScaleX = this.isDizzy ? 0.7 : 1;
     const mouthScaleY = this.isDizzy ? 2 : 1;
     this.mouth.scale.set(mouthScaleX, mouthScaleY, 1);
-  };
-
-  /**
-   * Constrain rotation angle of head within a certain range
-   */
-  _constrainHeadRotation = (vector) => {
-    const minRad = Math.PI / 5;
-    if (vector.x > minRad) {
-      vector.x = minRad;
-    } else if (vector.x < -minRad) {
-      vector.x = -minRad;
-    }
-
-    if (vector.y > minRad) {
-      vector.y = minRad;
-    } else if (vector.y < -minRad) {
-      vector.y = -minRad;
-    }
-
-    return vector;
   };
 
   /**
