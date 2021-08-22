@@ -26,7 +26,9 @@ module.exports = merge(webpackCommon, {
     ],
   },
   devServer: {
-    contentBase: `${root}/src`,
+    static: {
+      directory: `${root}/src`,
+    },
     hot: true,
     port: 3000,
   },
