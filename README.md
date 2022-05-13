@@ -1,3 +1,2 @@
-## GitHub page
+## [Personal GitHub Page](https://kwrush.github.io)
 
-visit https://kwrush.github.io
